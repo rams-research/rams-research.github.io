@@ -10,5 +10,19 @@
 	</head>
 	<body>
 		Hello World
+		
+		<script>
+         const importObj = {
+            env: { 
+               displaylog: n => alert("The max of (400, 130) is " +n) 
+            } 
+         };
+         fetch("testmax.wasm") .then(bytes => bytes.arrayBuffer()) 
+            .then(module => WebAssembly.instantiate(module, importObj)) 
+            .then(finalcode => { 
+            console.log(finalcode); 
+            console.log(finalcode.instance.exports.max(400,130)); 
+         }); 
+      </script> 
 	</body>
 </html>
