@@ -6,24 +6,30 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
 		<meta name="googlebot" content="noindex">
 		<meta name="robots" content="noindex">
-		<link href="testmax.wasm" rel="stylesheet">
 	</head>
 	<body>
 		Hello World
+		Test add.wasm
 
-		Test WASM 2 contiacao
+		<input type="text" id="input1">
+		<input type="text" id="input2">
 
-		<script>
-const importObj = { env: {  displaylog: n => alert("The max of (400, 130) is " +n) } };
-fetch("testmax.wasm")
-	.then(bytes => bytes.arrayBuffer()) 
-	.then(module => WebAssembly.instantiate(module, importObj))
-	.then(
-		finalcode => {
-			console.log(finalcode); 
-			console.log(finalcode.instance.exports.max(400,130)); 
-		}
-	);
-		</script> 
+		<input type="button" id="clickMe" value="add">
+		<input type="text" id="output">
+
+		<script type="module"> (async() => {
+			const response = await fetch('add.wasm');
+			const bytes = await response.arrayBuffer();
+			const { instance } = await WebAssembly.instantiate(bytes);
+	
+			document.getElementById("clickMe").onclick = function () {
+				var input1 = document.getElementById("input1").value;
+				var input2 = document.getElementById("input2").value;
+				document.getElementById("output").setAttribute('value','The answer is: ' + input1 + " + " + input2 + " = " + instance.exports.add(input1,input2));
+				alert("Hello");
+			};
+		      })();
+		</script>
+
 	</body>
 </html>
