@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>rams-research</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+<script src="https://kit.fontawesome.com/c6514dbe78.js" crossorigin="anonymous"></script>
+<style>
+
+/* custom styling for all icons */
+  .fa,
+  .fa-solid,
+  .fa-brands, 
+  .fa-sharp-solid {
+    color: tomato;
+    background-color: papayawhip;
+    border-radius: 0.2em;
+    padding: 0.3em;
+  }
+
+
+body,h1,h2,h3,h4,h5,h6 {
+  font-family: "Lato", sans-serif;
+}
+
+body, html {
+  height: 100%;
+  color: #777;
+  line-height: 1.8;
+}
+
+summary {
+  text-align: left;
+  font-size: 1.2em;
+}
+summary:hover{
+  color:black;
+}
+summary:active{
+  color:black;
+}
+
+p {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+ul {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+.boxed {
+  border-radius: 25px;
+  border: 2px solid;
+  padding: 10px;
+  margin: 3px;
+  border-color: #C8C8C8;
+}
+
+/* Create a Parallax Effect */
+.bgimg-1, .bgimg-2, .bgimg-3 {
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+/* First image (Logo. Full height) */
+.bgimg-1 {
+  background-image: url('dataflow-1.png');
+  min-height: 100%;
+  width:100%;
+  background-size: auto;
+}
+
+.w3-wide {
+  letter-spacing: 10px;
+}
+
+.w3-hover-opacity {
+  cursor: pointer;
+}
+
+/* Turn off parallax scrolling for tablets and phones */
+@media only screen and (max-device-width: 1600px) {
+  .bgimg-1, .bgimg-2, .bgimg-3 {
+    background-attachment: scroll;
+    min-height: 400px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Navbar (sit on top) -->
+<div class="w3-top">
+  <div class="w3-bar" id="myNavbar">
+    <a class="w3-bar-item w3-button w3-hover-black w3-hide-medium w3-hide-large w3-right" href="javascript:void(0);" onclick="toggleFunction()" title="Toggle Navigation Menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <a href="#home" class="w3-bar-item w3-button">HOME</a>
+    <a href="#portfolio" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-th"></i> RESEARCH</a>
+    <a href="#projects" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-th"></i> PROJECTS</a>
+    <a href="#about" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-user"></i> ABOUT</a>
+    <a href="#contact" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-envelope"></i> CONTACT</a>
+    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-hover-red">
+      <i class="fa fa-search"></i>
+    </a>
+  </div>
+
+  <!-- Navbar on small screens -->
+  <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium">
+    <a href="#portfolio" class="w3-bar-item w3-button" onclick="toggleFunction()">RESEARCH</a>
+    <a href="#about" class="w3-bar-item w3-button" onclick="toggleFunction()">ABOUT</a>
+    <a href="#contact" class="w3-bar-item w3-button" onclick="toggleFunction()">CONTACT</a>
+    <a href="#" class="w3-bar-item w3-button">SEARCH</a>
+  </div>
+</div>
+
+<!-- First Parallax Image with Logo Text -->
+<div class="bgimg-1 w3-display-container w3-opacity" id="home">
+  <div class="w3-display-middle" style="white-space:nowrap;">
+    <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">RAMS <span class="w3-hide-small">RESEARCH</span> </span>
+  </div>
+</div>
+
+<!-- Container (About Section) -->
+<div class="w3-content w3-container w3-padding-64" id="about">
+<div class="w3-row w3-center w3-dark-grey">
+  <h3 class="w3-center">ABOUT ME</h3>
+</div>
+  <p class="w3-center"><em>Science and Research</em></p>
+
+    
+  <div class="w3-row">
+    <div class="w3-col m6 w3-center w3-padding-large">
+      <p><b>
+        <i class="fa fa-user w3-margin-right"></i>Rodrigo A. Moreira <br>
+        <i class="fa-brands fa-orcid"></i> <a href="https://orcid.org/0000-0002-7605-8722"> https://orcid.org/0000-0002-7605-8722 </a>
+      </b></p><br>
+      <img src="me.jpeg" class="w3-round w3-image " alt="Photo of Me" width="222" height="111"> <!-- w3-opacity w3-hover-opacity-off -->
+    </div>
+    <!-- Hide this text on small devices -->
+    <div class="m6 w3-hide-small w3-padding-large">
+      <p>
+My research lies at the interface between applied mathematics, modeling, and computational physics and chemistry. I develop advanced physical-mathematical methods to understand the physical-chemical and functional properties of organic biopolymers, e.g protein complexes and cellulose polymers. My ultimate endeavor is to ensure that my research leads to significant advances and impact clinical therapies. In particular, this unique combination simulation and experimental data shed new light into the understanding of the evolutionary mechanism followed by the various SARS-CoV-2 mutants.
+      </p>
+      <p>
+I have pioneered a framework that combines for the first time data analysis from all-atom molecular dynamics (MD), computational algebraic topology and computational geometry with also quantum chemistry concepts. It enables identifying higher-order emergent topological and geometrical invariant from large biological complexes, which can also be used to create multiscale models. In particular, the simple contact map analysis and hydrogen bonds network, commonly used within the structural biophysics community to create multiscale models and effective interactions, are based on pairwise interaction only. My methodology captures high-order interaction in an accurate mathematical background.
+      </p>
+    </div>
+</div>
+
+<!-- Container (projects Section) -->
+<div class="w3-content w3-container w3-padding-32" id="projects">
+  <div class="w3-row w3-center w3-dark-grey">
+    <h3 class="w3-center">ONGOING PROJECTS</h3>
+  </div>
+  <p class="w3-center"><em>Here are the ongoing project I'm participating</em></p>
+  <ul>
+    <li>
+      <img src="logo-bcam-color-transparent-450-300x150.png" class="w3-image w3-round" style="width: 150px"> 
+      Long-termcovid-19 multiphase persistent interaction – BMTF 
+    </li>
+  </ul>
+</div>
+
+<!-- Container (Portfolio Section) -->
+<div class="w3-content w3-container w3-padding-32" id="portfolio">
+
+  <div class="w3-row w3-center w3-dark-grey">
+    <h3 class="w3-center">OUR RESEARCH</h3>
+  </div>
+  
+  <p class="w3-center"><em>Here are some of my latest research topics. Click on the figures to get more details.</em></p>
+  
+    <div class="boxed">
+      <details>
+        <summary>
+          Applied Topology, Topological data analysis, Topological energy and dynamics
+          <div class="w3-center">
+            <img src="img/JPhys-Complexity-2019-1.png" style="height:180px;" class="w3-hover-opacity" alt="Sars-CoV-2">
+          </div>   
+          <div>
+          <ul>
+            <li>
+              <a href="https://doi.org/10.1088/2632-072x/ac664c" class="w3-hover-text-green"> 
+                DOI: 10.1088/2632-072x/ac664c 
+                - <b> The Euler characteristic and topological phase transitions in complex systems </b>
+                <img src="img/JPhys-Complexity-NEWS.jpg" style="height:40px">
+              </a>
+            </li>
+          </ul>
+          </div>
+        </summary>
+        Details Details DetailsDetailsDetailsDetails Details Details Details Details Details Details Details 
+      </details>
+    </div>
+    
+    <div class="boxed">    
+      <details>
+        <summary>
+          SARS-CoV-2, Spike Protein, Molecular Dynamics
+          <div class="w3-center">
+            <img src="img/mechanostability.png" style="height:180px;" class="w3-hover-opacity" alt="Sars-CoV-2">
+            <img src="img/pointmutations.png" style="height:180px;" class="w3-hover-opacity" alt="Point mutations">
+          </div>
+          <div style="text-align:left;">
+            <ul>
+              <li>
+                <a href="https://doi.org/10.1039/d0nr03969a" class="w3-hover-text-green">
+                  DOI: 10.1039/d0nr03969a 
+                  - <b> Quantitative determination of mechanical stability in the novel coronavirus spike protein </b>
+                  <img src="img/nanoscale_400x400.jpg" style="height:40px">
+                </a>
+             </li>
+             <li>
+               <a href="https://doi.org/10.1038/s41467-021-27325-1" class="w3-hover-text-green">
+                 DOI: 10.1038/s41467-021-27325-1 
+                 - <b> Molecular insights into receptor binding energetics and neutralization of SARS-CoV-2 variants </b>
+                 <img src="img/Nature_Communications_Logo.png" style="height:40px">
+               </a>
+             </li> 
+             <li>
+               <a href="https://doi.org/10.3390/ma13235362" class="w3-hover-text-green">
+                 DOI: 10.3390/ma13235362 
+                 - <b> Characterization of Structural and Energetic Differences between Conformations of the SARS-CoV-2 Spike Protein</b>
+                 <img src="img/materials-logo.webp" style="height:40px">
+               </a>
+             </li> 
+            </ul>            
+          </div>
+        </summary>
+        Details Details DetailsDetailsDetailsDetails Details Details Details Details Details Details Details 
+      </details>
+    </div>
+
+    <div class="boxed">
+      <details>
+        <summary>
+          Protein Interface Stability
+          <div class="w3-center">
+            <img src="img/interfacestability.png" style="height:180px;" class="w3-hover-opacity" alt="Interface stability">
+          </div>
+          <div>
+          <ul>
+            <li>
+              <a href="https://doi.org/10.1021/acs.nanolett.1c03584" class="w3-hover-text-green"> 
+                  DOI: 10.1021/acs.nanolett.1c03584 
+                  - <b> Mapping Mechanostable Pulling Geometries of a Therapeutic Anticalin/CTLA-4 Protein Complex </b>
+                  <img src="img/Logo_of_Nano_Letters.svg.png" style="height:40px"> 
+                </a>
+            </li>
+          </ul>
+          </div>
+        </summary>
+        Details Details DetailsDetailsDetailsDetails Details Details Details Details Details Details Details 
+      </details>
+    </div>
+    
+     <div class="boxed">
+      <details>
+        <summary>
+          Coarse-Grain modeling, Cellulose Fibrils, MARTINI 3
+          <div class="w3-center">
+            <img src="img/978-1-0716-1546-1.webp" style="height:180px;" class="w3-hover-opacity" alt="">
+            <img src="img/cellulose.model-1.png" style="height:180px;" class="w3-hover-opacity" alt="Cellulose model">
+          </div>
+          <div>
+            <ul>
+              <li>
+                <a href="https://doi.org/10.3390/ijms23158505" class="w3-hover-text-green"> 
+                  DOI: 10.3390/ijms23158505 
+                  - <b> Molecular Insight into the Self-Assembly Process of Cellulose Iβ Microfibril </b> 
+                  <img src="img/ijms-logo.webp" style="height:40px"> 
+                </a>
+              </li>
+              <li>
+                <a href="https://doi.org/10.3390/molecules27030976" class="w3-hover-text-green"> 
+                  DOI: 10.3390/molecules27030976 
+                  - <b> Martini 3 Model of Cellulose Microfibrils: On the Route to Capture Large Conformational Changes of Polysaccharides </b> 
+                  <img src="img/molecules_logo.png" style="height:40px"> 
+                </a>
+              </li>
+              <li>
+                <a href="https://doi.org/10.1007/978-1-0716-1546-1_16" class="w3-hover-text-green"> 
+                  DOI: 10.1007/978-1-0716-1546-1_16 
+                  - <b> Assessing the Stability of Biological Fibrils by Molecular-Scale Simulations </b> 
+                  <img src="img/springer_logo_high_res.png" style="height:25px"> 
+                </a>
+              </li>
+            </ul>
+          </div>
+        </summary>
+        Details Details DetailsDetailsDetailsDetails Details Details Details Details Details Details Details      
+      </details>
+    </div>
+    
+    <div class="boxed">
+      <details>
+        <summary>
+          Old works, Hamiltonian model, Exact diagonalization, Quantum Chemistry
+          <div class="w3-center">
+            <img src="img/images_medium_ct-2017-00930w_0006.gif" style="height:160px;" class="w3-hover-opacity" alt="Book Chapter">
+          </div>
+          <div>
+            <ul>
+              <li>
+                <a href="https://doi.org/10.1016/j.cplett.2019.04.023" class="w3-hover-text-green"> 
+                  DOI: 10.1016/j.cplett.2019.04.023 
+                  - <b> Quantification of molecular orbitals based on projection operators: Methodological development and applications to basicity prediction of organic compounds in the gas phase. </b> 
+                </a>
+              </li>  
+              <li> 
+                <a href="https://doi.org/10.1021/acs.jctc.7b00930" class="w3-hover-text-green"> 
+                  DOI: 10.1021/acs.jctc.7b00930 
+                  - <b> Energy Gaps of Polyradicals from an Effective and Transferable Hamiltonian with through-Bond Interactions </b> 
+                  <img src="img/JCTC_logo.png" style="height:40px"> 
+                </a> 
+              </li>  
+              <li> 
+                <a href="https://doi.org/10.1007/s13538-017-0535-7" class="w3-hover-text-green"> 
+                  DOI: 10.1007/s13538-017-0535-7 
+                  - <b> On the separability of the extended molecule: Constructing the best localized molecular orbitals for an organic molecule bridging two model electrodes. </b> 
+                  <img src="img/aip-site-1665400598970.webp" style="height:40px"> 
+                </a> 
+              </li>   
+            </ul>
+          </div>
+        </summary>
+      </details>
+    </div>
+    
+</div>
+
+<!-- Container (Contact Section) -->
+<div class="w3-content w3-container w3-padding-32" id="contact">
+
+  <div class="w3-row w3-center w3-dark-grey">
+    <h3 class="w3-center">WHERE I WORK</h3>
+  </div>
+  
+  <h3 class="w3-center">
+    <a href="http://www.bcamath.org/es/" class="w3-hover-text-green">
+      <img src="logo-bcam-color-transparent-450-300x150.png" class="w3-image w3-round" style="width: 150px"> 
+      Basque Center for Applied Mathematics
+    </a>
+  </h3>
+  
+  <p class="w3-center">
+    <a href="http://www.bcamath.org/en/research/lines/MCEN" class="w3-hover-text-green">
+    <em> MCEN - Mathematical, Computational and Experimental Neuroscience Group </em> <br>
+    <img src="img/mcen-logo.png" style="height:160px;" alt="MCEN logo"><br>
+    http://www.bcamath.org/en/research/lines/MCEN <br>
+    </a>
+  </p>
+
+  <div class="w3-large w3-margin-bottom">
+    <i class="fa fa-map-marker fa-fw w3-hover-text-black w3-large w3-margin-right"></i> Bilbao, Basque Country, Spain<br>
+    <i class="fa fa-phone fa-fw w3-hover-text-black w3-large w3-margin-right"></i> Phone: +34 946 56 78 42<br>
+    <i class="fa fa-envelope fa-fw w3-hover-text-black w3-large w3-margin-right"></i> http://www.bcamath.org/en/people/razevedo <br>
+  </div>
+  <p>Swing by for a cup of <i class="fa fa-coffee"></i>.</p>
+   
+</div>
+
+<!-- Footer -->
+<footer class="w3-center w3-black w3-padding-8 w3-opacity ">
+
+  <div class="w3-large w3-section">
+    
+    <a href="#home" class="w3-hover-text-green"><i class="fa fa-arrow-up w3-margin-right "></i>To the top</a>    
+    
+    <i class="fa fa-font-awesome "></i>
+    <i class="fa-brands fa-github"></i>
+    <i class="fa-solid fa-c"></i>
+  
+    Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-text-green">w3.css</a>  
+  </div>
+  
+  
+</footer>
+ 
+<script>
+// Change style of navbar on scroll
+window.onscroll = function() {myFunction()};
+function myFunction() {
+    var navbar = document.getElementById("myNavbar");
+    if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+        navbar.className = "w3-bar" + " w3-card" + " w3-animate-top" + " w3-white";
+    } else {
+        navbar.className = navbar.className.replace(" w3-card w3-animate-top w3-white", "");
+    }
+}
+
+// Used to toggle the menu on small screens when clicking on the menu button
+function toggleFunction() {
+    var x = document.getElementById("navDemo");
+    if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+    } else {
+        x.className = x.className.replace(" w3-show", "");
+    }
+}
+</script>
+
+</body>
+</html>
