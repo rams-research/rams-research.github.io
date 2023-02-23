@@ -4,7 +4,7 @@
 <title>rams-research</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
 <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
 <script src="https://kit.fontawesome.com/c6514dbe78.js" crossorigin="anonymous"></script>
@@ -27,9 +27,13 @@ body,h1,h2,h3,h4,h5,h6 {
 }
 
 body, html {
+  margin: 0 auto;
+  padding: 0;
   height: 100%;
-  color: #777;
+  color: #000;
   line-height: 1.8;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 summary {
@@ -43,17 +47,18 @@ summary:active{
   color:black;
 }
 
-p {
-  text-align: justify;
-  text-justify: inter-word;
-}
-
-ul {
-  text-align: justify;
-  text-justify: inter-word;
+.container {
+  overflow-x: auto;
+  display: grid;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  grid-auto-flow: row;
+  margin: 0 auto;
 }
 
 .boxed {
+  flex: 1;
   border-radius: 25px;
   border: 2px solid;
   padding: 10px;
@@ -163,8 +168,10 @@ I have pioneered a framework that combines for the first time data analysis from
   <p class="w3-center"><em>Here are the ongoing project I'm participating</em></p>
   <ul>
     <li>
-      <img src="logo-bcam-color-transparent-450-300x150.png" class="w3-image w3-round" style="width: 150px"> 
-      Long-termcovid-19 multiphase persistent interaction – BMTF 
+      <img src="logo-bcam-color-transparent-450-300x150.png" class="w3-image w3-round" style="height: 150px">
+      <a href="https://www.ikerbasque.net/en/news/basque-government-will-invest-additional-100-million-euros-10-years-promote-strategic-areas"> <img src="img/ikur_logo.png" class="w3-image w3-round" style="width: 150px"> </a><br>
+      Mathematical Modelling Applied to Health<br>
+      Long-term Covid-19 Multiphase Persistent Interaction – Ikur-BMTF
     </li>
   </ul>
 </div>
@@ -177,7 +184,7 @@ I have pioneered a framework that combines for the first time data analysis from
   </div>
   
   <p class="w3-center"><em>Here are some of my latest research topics. Click on the figures to get more details.</em></p>
-  
+  <div class="container">
     <div class="boxed">
       <details>
         <summary>
@@ -334,7 +341,7 @@ I have pioneered a framework that combines for the first time data analysis from
         </summary>
       </details>
     </div>
-    
+    </div>
 </div>
 
 <!-- Container (Contact Section) -->
