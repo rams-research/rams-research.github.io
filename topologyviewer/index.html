@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>TopMolViewer</title>
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<!--link type="text/css" rel="stylesheet" href="main.css"-->
+		<link type="text/css" rel="stylesheet" href="../w3.css">
+		<link type="text/css" rel="stylesheet" href="../custom.css">
+		<script type = "module">
+			import * as module from './main.js'
+			module.init();
+			window.setColorButton = module.setColorButton;
+			window.setAAColorButton = module.setAAColorButton;
+		</script>
+		<script type="text/javascript">
+			function saveCanvas() {
+				let downloadLink = document.createElement('a');
+				downloadLink.setAttribute('download', 'CanvasAsImage.png');
+				let canvas = document.getElementById('maincanvas');
+				canvas.toBlob(function(blob) {
+					let url = URL.createObjectURL(blob);
+					downloadLink.setAttribute('href', url);
+					downloadLink.click();
+				});
+			}
+		</script>
+		<style>
+			.lil-gui {
+				--width: 250px;
+				--name-width: 60%;
+				--padding: 10px;
+				--font-size: 100%;
+				--widget-height: 25px;
+				
+				--background-color: #f6f6f6;
+				--text-color: #3d3d3d;
+				--title-background-color: #efefef;
+				--title-text-color: #3d3d3d;
+				--widget-color: #eaeaea;
+				--hover-color: #f0f0f0;
+				--focus-color: #fafafa;
+				--number-color: #07aacf;
+				--string-color: #8da300;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="w3-container w3-center w3-light-green">
+			<div class="w3-row">
+				<div id="info" class="w3-col l2"> Version: 03272023<br> (C) Rodrigo A. Moreira 2023 </div>
+				<div class="w3-col l5">
+					Visualization of Topogical Simplicial Complexes Proteinss<br>
+					Basque Center for Applied Mathematics
+				</div>
+				<div class="w3-col l2"> </div>
+			</div>
+		</div>
+		<div class="w3-container">
+			<div class="w3-row-padding">
+				<div id="guicontainer" class="w3-col" style="width:260px"> </div>
+				<div class="w3-col l1 w3-leftbar w3-border-light-green" style="height:120px; width: 140px;">
+					<button id="screenshot" class="w3-button w3-border" type="button" onclick="saveCanvas()"> Save canvas </button>
+					<!--button id="loadfile" type="button" class="row" style="width:100px"> Load file </button-->
+				</div>
+				<div id="infoeuler" class="w3-col w3-leftbar w3-border-light-green" style="width:320px; height:120px; color:white; background:#3d3d3d;">
+					Filtration cutoff: <br>
+					Euler Characteristics: <br>
+					Average Euler Characteristic: 
+				</div>
+				<div class="w3-col w3-leftbar w3-border-light-green" style="width:340px; height:120px">
+					Choose colors that represent an Euler curvature below and/or residues types<br>
+					<div id="pickcolorbutton" class="w3-bar"> </div>
+				</div>
+				<div id="pickaabutton" class="w3-col w3-bar" style="width:500px; height:120px"></div>
+				<div id="inforesidue" class="w3-col l2 w3-leftbar w3-border-light-green" style="height:120px;"></div>
+				<div id="infomouse" class="w3-col l2 w3-leftbar w3-border-light-green"></div>
+				<!--div id="infotubeintersection" class="w3-col l2 w3-leftbar w3-border-light-green" style="margin:10px; padding: 10px; height:90px"></div-->
+				<div id="canvascontainer" class="w3-col l1">
+					<canvas id="maincanvas"></canvas>
+				</div>
+			</div>
+		</div>
+
+		<div class="w3-container w3-center w3-light-green">
+		<div class="w3-row">
+			<div class="w3-col l2">
+				<img src="../logo-bcam-color-transparent-450-300x150.png" class="w3-image w3-round" style="height: 80px">
+			</div>
+			<div class="w3-col l5">
+				Mathematical, Computational and Experimental Neuroscience (MCEN)<br>
+				Dr. Serafim Rodrigues<br>
+				Ikerbasque Research Professor
+			</div>
+			<div  class="w3-col l2">
+				<img src="../img/mcen-logo.png" class="w3-image w3-round" style="height: 80px">
+			</div>
+		</div>
+		</div>
+		
+	<!-- Footer -->
+	<footer class="w3-center w3-black w3-padding-8 w3-opacity ">
+	    <!-- Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-text-green">w3.css</a> -->
+	</footer>
+
+	</body>
+</html>

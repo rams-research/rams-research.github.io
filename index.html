@@ -5,98 +5,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="w3.css">
+<link rel="stylesheet" href="custom.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
 <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
 <script src="https://kit.fontawesome.com/c6514dbe78.js" crossorigin="anonymous"></script>
 <style>
-
-/* custom styling for all icons */
-  .fa,
-  .fa-solid,
-  .fa-brands, 
-  .fa-sharp-solid {
-    color: tomato;
-    background-color: papayawhip;
-    border-radius: 0.2em;
-    padding: 0.3em;
-  }
-
-
-body,h1,h2,h3,h4,h5,h6 {
-  font-family: "Lato", sans-serif;
-}
-
-body, html {
-  margin: 0 auto;
-  padding: 0;
-  height: 100%;
-  color: #000;
-  line-height: 1.8;
-  text-align: justify;
-  text-justify: inter-word;
-}
-
-summary {
-  text-align: left;
-  font-size: 1.2em;
-}
-summary:hover{
-  color:black;
-}
-summary:active{
-  color:black;
-}
-
-.container {
-  overflow-x: auto;
-  display: grid;
-  flex: 1;
-  flex-wrap: wrap;
-  align-items: center;
-  grid-auto-flow: row;
-  margin: 0 auto;
-}
-
-.boxed {
-  flex: 1;
-  border-radius: 25px;
-  border: 2px solid;
-  padding: 10px;
-  margin: 3px;
-  border-color: #C8C8C8;
-}
-
-/* Create a Parallax Effect */
-.bgimg-1, .bgimg-2, .bgimg-3 {
-  background-attachment: fixed;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-
-/* First image (Logo. Full height) */
-.bgimg-1 {
-  background-image: url('img/dataflow-1.png');
-  min-height: 100%;
-  width:100%;
-  background-size: auto;
-}
-
-.w3-wide {
-  letter-spacing: 10px;
-}
-
-.w3-hover-opacity {
-  cursor: pointer;
-}
-
-/* Turn off parallax scrolling for tablets and phones */
-@media only screen and (max-device-width: 1600px) {
-  .bgimg-1, .bgimg-2, .bgimg-3 {
-    background-attachment: scroll;
-    min-height: 400px;
-  }
-}
 </style>
 </head>
 <body>
@@ -112,9 +25,9 @@ summary:active{
     <a href="#projects" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-th"></i> PROJECTS</a>
     <a href="#about" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-user"></i> ABOUT</a>
     <a href="#contact" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-envelope"></i> CONTACT</a>
-    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-hover-red">
+    <!--a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-hover-red">
       <i class="fa fa-search"></i>
-    </a>
+    </a-->
   </div>
 
   <!-- Navbar on small screens -->
@@ -122,7 +35,7 @@ summary:active{
     <a href="#portfolio" class="w3-bar-item w3-button" onclick="toggleFunction()">RESEARCH</a>
     <a href="#about" class="w3-bar-item w3-button" onclick="toggleFunction()">ABOUT</a>
     <a href="#contact" class="w3-bar-item w3-button" onclick="toggleFunction()">CONTACT</a>
-    <a href="#" class="w3-bar-item w3-button">SEARCH</a>
+    <!--a href="#" class="w3-bar-item w3-button">SEARCH</a-->
   </div>
 </div>
 
@@ -133,15 +46,20 @@ summary:active{
   </div>
 </div>
 
-<!-- Container (About Section) -->
-<div class="w3-content w3-container w3-padding-64" id="about">
+<!-- Container ghost to keep distances -->
+<!--div class="w3-content w3-container w3-padding-32" id="ghost">
 <div class="w3-row w3-center w3-dark-grey">
-  <h3 class="w3-center">ABOUT ME</h3>
-</div>
-  <p class="w3-center"><em>Science and Research</em></p>
+asdfaf
+  </div>
+<div-->
 
-    
-  <div class="w3-row">
+<!-- Container (About Section) -->
+<div class="w3-container" id="about" style="width:100%">
+  <div class="w3-row w3-center w3-dark-grey">
+    <h3> ABOUT ME</h3>
+  </div>
+  <p class="w3-center"><em>Science and Research</em></p>
+  <div class="w3-content w3-row">
     <div class="w3-col m6 w3-center w3-padding-large">
       <p>
       <b>
@@ -170,11 +88,12 @@ In particular, the simple contact map analysis and hydrogen bonds network, commo
 </div>
 
 <!-- Container (projects Section) -->
-<div class="w3-content w3-container w3-padding-32" id="projects">
+<div class="w3-container" id="projects">
   <div class="w3-row w3-center w3-dark-grey">
-    <h3 class="w3-center">ONGOING PROJECTS</h3>
+    <h3>ONGOING PROJECTS</h3>
   </div>
   <p class="w3-center"><em>Projects I'm participating</em></p>
+  <div class="w3-content w3-center">
   <!--ul-->
     <!--li-->
       <b>
@@ -188,17 +107,18 @@ In particular, the simple contact map analysis and hydrogen bonds network, commo
       <img src="img/curead-1.png" alt="curead-logo" class="w3-image w3-round" style="height: 150px"><br>
     <!--/li-->
   <!--/ul-->
+  </div>
 </div>
 
 <!-- Container (Portfolio Section) -->
-<div class="w3-content w3-container w3-padding-32" id="portfolio">
+<div class="w3-container" id="portfolio">
 
   <div class="w3-row w3-center w3-dark-grey">
     <h3 class="w3-center">OUR RESEARCH</h3>
   </div>
   
   <p class="w3-center"><em>Latest research topics. Click on the figures to get the abstracts</em></p>
-  <div class="container">
+  <div class="w3-content">
     <div class="boxed">
       <details>
         <summary>
@@ -376,12 +296,13 @@ High resolution data from all-atom molecular simulations is used to parameterize
 </div>
 
 <!-- Container (Contact Section) -->
-<div class="w3-content w3-container w3-padding-32" id="contact">
+<div class="w3-container" id="contact">
 
   <div class="w3-row w3-center w3-dark-grey">
     <h3 class="w3-center">WHERE I WORK</h3>
   </div>
   
+  <div class="w3-content">
   <h3 class="w3-center">
     <a href="http://www.bcamath.org/es/" class="w3-hover-text-green">
       <img src="logo-bcam-color-transparent-450-300x150.png" class="w3-image w3-round" style="width: 150px"> 
@@ -403,7 +324,7 @@ High resolution data from all-atom molecular simulations is used to parameterize
     <i class="fa fa-envelope fa-fw w3-hover-text-black w3-large w3-margin-right"></i> http://www.bcamath.org/en/people/razevedo <br>
   </div>
   <p>Swing by for a cup of <i class="fa fa-coffee"></i>.</p>
-   
+  </div>
 </div>
 
 <!-- Footer -->
