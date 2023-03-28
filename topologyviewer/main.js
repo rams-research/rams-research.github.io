@@ -33,13 +33,18 @@ let particle = {
 		return curvature[resid][cutoff];
 	},
 	charge: function(i) {
-		let m = {
+		let m = new Proxy( {
 			'H':1.0,
 			'O':8.0,
-			'N':7.0,
+			'N':7.0, 
 			'C':6.0,
 			'S':16.0
-		}
+		}, function() { 
+			get: (obj,prop) => { 
+				console.log('Unmapped atom ',obj);
+				return prop in obj ? obj[prop] : 1.0 
+			}}
+		);
 		return m[this.name(i).slice(0,1)]
 	}
 }
@@ -217,9 +222,9 @@ const tube = {
 	material: false,
 	mapsegments: [],
 	visible: true,
-	segmentsMultiply: 2,
-	radius: 0.20,
-	radialSegments: 8,
+	segmentsMultiply: 3,
+	radius: 0.10,
+	radialSegments: 5,
 	//color: 0x000000,
 	transparent: false,
 	opacity: 1.0,
@@ -240,7 +245,7 @@ const tube = {
 			}
 		}
 		this.nnodes = coords.length;
-		this.path = new THREE.CatmullRomCurve3(coords, false, 'centripetal', 0.05);
+		this.path = new THREE.CatmullRomCurve3(coords, false, 'catmullrom', 0.8);
 		
 		this.material = new THREE.MeshPhysicalMaterial( {
 			//color: this.color,
@@ -249,7 +254,7 @@ const tube = {
 			transparent: this.transparent,
 			opacity: this.opacity,
 			vertexColors: true,
-			//side:THREE.DoubleSide,
+			side:THREE.DoubleSide,
 			wireframe: false,
 			// Physical below
 			clearcoat: 0.5,
@@ -376,9 +381,9 @@ const tube = {
 		folder.add( tube, 'visible', true ).onChange( onUpdate );
 		folder.add( tube, 'transparent', false ).onChange( onUpdate );
 		folder.add( tube, 'opacity', 0.1, 1.0, 0.01).onChange( onUpdate );
-		//folder.add( tube, 'segmentsMultiply', 1, 5, 1).onChange( onUpdate );
+		folder.add( tube, 'segmentsMultiply', 1, 10, 1).onChange( onUpdateGeometry );
 		folder.add( tube, 'radius', 0.1, 1.0, 0.01 ).onChange( onUpdateGeometry );
-		folder.add( tube, 'radialSegments', 1, 10, 1 ).onChange( onUpdateGeometry );
+		folder.add( tube, 'radialSegments', 2, 20, 1 ).onChange( onUpdateGeometry );
 		folder.add( tube, 'showMarker', true ).onChange( onUpdateMarker );
 		//folder.addColor( tube, 'color').onChange(onUpdate);
 		
@@ -400,7 +405,8 @@ const tube = {
 			ray.mouse.x =  (event.clientX-left)/container.width  * 2 - 1;
 			ray.mouse.y = -(event.clientY-top) /container.height * 2 + 1;
 			
-			document.getElementById("infomouse").innerHTML = `mouse: x= ${ray.mouse.x.toFixed(2)} y=${ray.mouse.y.toFixed(2)}`
+			let str = `mouse: x= ${ray.mouse.x.toFixed(2)} y=${ray.mouse.y.toFixed(2)}`;
+			
 			
 			// get tube intersection and set marker
 			ray.caster.setFromCamera(ray.mouse, camera);
@@ -410,10 +416,13 @@ const tube = {
 			
 			if ( ray.intersections.length > 0 ) {
 				//console.log('intersection',ray.intersections[0].point);
-				tube.markerMesh.position.copy( ray.intersections[0].point );
+				const p = ray.intersections[0].point;
+				tube.markerMesh.position.copy( p );
 				tube.markerMesh.visible = true;
 				tube.markerMesh.material.needsUpdate = true;
+				str += ` | canvas coordinates: x= ${p.x.toFixed(2)} y= ${p.y.toFixed(2)} z= ${p.z.toFixed(2)}`
 			}
+			document.getElementById("infomouse").innerHTML = str;
 		});
 		
 		renderer.domElement.addEventListener('click', function (event) {
@@ -606,7 +615,7 @@ const points = {
 	geometry: false,
 	material: false,
 	mesh: false,
-	scale: 0.5,
+	scale: 0.6,
 	vshader: `
 		precision highp float;
 		uniform mat4 modelViewMatrix;
@@ -903,12 +912,12 @@ export function init() {
 	
 	group = new THREE.Group();
 	scene.add( group );
-	
+	/*
 	const axesHelper = new THREE.AxesHelper( 5 );
 	axesHelper.translateX(40);
 	axesHelper.translateY(20);
 	scene.add( axesHelper );
-
+	*/
 	function onWindowResize() {
 		const containerSize = getContainerSize(); 
 		const width = containerSize.width;
