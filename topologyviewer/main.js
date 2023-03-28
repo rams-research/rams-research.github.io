@@ -4,7 +4,7 @@ import { GUI } from './js/lil-gui.module.min.js'
 
 // GLOBAL OBJECTS
 
-let canvas, container, renderer, scene, camera, group, controls, gui;
+let canvas, container, renderer, scene, camera, group, gui;
 
 let particle = {
 	data: {
@@ -210,29 +210,6 @@ const pickColorButtons = {
 	},
 }
 
-let time = Date.now();
-function animate() {
-	requestAnimationFrame( animate );
-	controls.update();
-	
-	//const time = Date.now() * 0.001;
-	group.rotation.x += animation.speedx;
-	group.rotation.y += animation.speedy;
-	group.rotation.z += animation.speedz;
-	
-	if ((Date.now() - time) > 100 && animation.filtration !== 0.0 ) {
-		filtration.cutoff += animation.filtration;
-		filtration.cutoff = filtration.cutoff > filtration.maxDistance ? filtration.minDistance : filtration.cutoff;
-		filtration.update();
-		time = Date.now();
-		//console.log('Animate cutoff and time',filtration.cutoff,time);
-	}
-	
-	controls.update();
-	
-	renderer.render( scene, camera );
-}
-
 const tube = {
 	path: false,
 	geometry: false,
@@ -247,6 +224,8 @@ const tube = {
 	transparent: false,
 	opacity: 1.0,
 	nnodes: 1,
+	showMarker: false,
+	markerMesh: new THREE.Mesh(new THREE.SphereBufferGeometry(0.25), new THREE.MeshBasicMaterial({color: 0xff0000, visible:true})),
 	init: function() {
 		console.log('Tube init...');
 		const coords = [];
@@ -380,15 +359,89 @@ const tube = {
 			group.add(tube.mesh);
 		};
 		
+		function onUpdateMarker() {
+			if (!tube.showMarker) {
+				scene.remove(tube.markerMesh);
+			
+				renderer.domElement.addEventListener('mousemove', function(event){});
+				renderer.domElement.addEventListener('click',function(event){});
+				document.getElementById("inforesidue").innerHTML = ``;
+				document.getElementById("infomouse").innerHTML = ``;
+			} else {
+				tube.updateMarker();
+				scene.add(tube.markerMesh);
+			}
+		}
+		
 		folder.add( tube, 'visible', true ).onChange( onUpdate );
 		folder.add( tube, 'transparent', false ).onChange( onUpdate );
 		folder.add( tube, 'opacity', 0.1, 1.0, 0.01).onChange( onUpdate );
 		//folder.add( tube, 'segmentsMultiply', 1, 5, 1).onChange( onUpdate );
 		folder.add( tube, 'radius', 0.1, 1.0, 0.01 ).onChange( onUpdateGeometry );
 		folder.add( tube, 'radialSegments', 1, 10, 1 ).onChange( onUpdateGeometry );
+		folder.add( tube, 'showMarker', true ).onChange( onUpdateMarker );
 		//folder.addColor( tube, 'color').onChange(onUpdate);
 		
 	},
+	updateMarker: function() {
+		
+		const ray = {
+			caster: new THREE.Raycaster(),
+			mouse: new THREE.Vector2(),
+			intersections: []
+		}
+
+		renderer.domElement.addEventListener('mousemove', function (event) {
+			event.preventDefault();
+			// get position in canvas
+			const rect = canvas.getBoundingClientRect();
+			const left = rect.left + window.scrollX;
+			const top  = rect.top  + window.scrollY;
+			ray.mouse.x =  (event.clientX-left)/container.width  * 2 - 1;
+			ray.mouse.y = -(event.clientY-top) /container.height * 2 + 1;
+			
+			document.getElementById("infomouse").innerHTML = `mouse: x= ${ray.mouse.x.toFixed(2)} y=${ray.mouse.y.toFixed(2)}`
+			
+			// get tube intersection and set marker
+			ray.caster.setFromCamera(ray.mouse, camera);
+			ray.intersections = ray.caster.intersectObject(tube.mesh);
+			
+			tube.markerMesh.visible = false;
+			
+			if ( ray.intersections.length > 0 ) {
+				//console.log('intersection',ray.intersections[0].point);
+				tube.markerMesh.position.copy( ray.intersections[0].point );
+				tube.markerMesh.visible = true;
+				tube.markerMesh.material.needsUpdate = true;
+			}
+		});
+		
+		renderer.domElement.addEventListener('click', function (event) {
+			event.preventDefault();
+			camera.updateMatrixWorld();
+			let segment = 0;
+			let residueOffset = 0;
+			if (ray.intersections.length > 0) {
+				segment = Math.floor(ray.intersections[0].faceIndex / (tube.radialSegments * 2));
+				residueOffset = Math.floor(segment/tube.segmentsMultiply);
+					
+				const residues = particle.data.residues;
+				const resseq = residues.sequence[residueOffset];
+				const cutoff = filtration.cutoff;
+				
+				const curv = residues.curvature[residueOffset][cutoff];
+				const name = residues.name[residueOffset];
+				const rgbstr = pickColor(curv);
+				
+				document.getElementById("inforesidue").innerHTML = `
+					Filtration cutoff: ${filtration.cutoff.toFixed(2)} <br>
+					Residue name: ${name} <br>
+					Resseq: ${resseq} <br>
+					Curvature: ${curv.toFixed(2)}`;
+				}
+			}
+		);
+	}
 }
 
 const edges = {
@@ -412,7 +465,7 @@ const edges = {
 			//blending: THREE.AdditiveBlending,
 			transparent: this.transparent,
 			opacity: this.opacity,
-			linewidth: 1,
+			//linewidth: 1,
 			linecap: 'round',
 			linejoin: 'round',
 			depthTest: true,
@@ -831,11 +884,11 @@ export function init() {
 	const containerSize = getContainerSize(); 
 	const width = containerSize.width;
 	const height = containerSize.height;
-	const divid = 40;
+	const divid = 30;
 	camera = new THREE.OrthographicCamera( -width/divid, width/divid, height/divid, -height/divid, -divid, 1000 );
-	camera.position.z = 0;
+	camera.position.z = 10;
 
-	controls = new TrackballControls( camera, renderer.domElement );
+	let controls = new TrackballControls( camera, renderer.domElement );
 	controls.minDistance = 10;
 	controls.maxDistance = 100;
 	controls.panSpeed = 10.0;
@@ -850,68 +903,6 @@ export function init() {
 	
 	group = new THREE.Group();
 	scene.add( group );
-
-	/*
-	const ray = {
-		caster: new THREE.Raycaster(),
-		mouse: new THREE.Vector2(),
-		intersections: []
-	}
-	
-	const marker = new THREE.Mesh( new THREE.SphereBufferGeometry(0.25), new THREE.MeshBasicMaterial({color: 0xff0000, visible:true}));
-	
-	renderer.domElement.addEventListener('mousemove', function (event) {
-		event.preventDefault();
-		// get position in canvas
-		const rect = canvas.getBoundingClientRect();
-		const left = rect.left + window.scrollX;
-		const top  = rect.top  + window.scrollY;
-		ray.mouse.x =  (event.clientX-left)/container.width  * 2 - 1;
-		ray.mouse.y = -(event.clientY-top) /container.height * 2 + 1;
-		
-		document.getElementById("infomouse").innerHTML = `mouse: x= ${ray.mouse.x.toFixed(2)} y=${ray.mouse.y.toFixed(2)}`
-		
-		// get tube intersection and set marker
-		ray.caster.setFromCamera(ray.mouse, camera);
-		ray.intersections = ray.caster.intersectObject(tube.mesh);
-		if ( ray.intersections.length > 0 ) {
-			 marker.position.copy( ray.intersections[0].point );
-			 marker.visible = true;
-		} else {
-			 marker.visible = false;
-		}
-		//this.reset(); // reset the result array
-		}
-	);
-	
-	renderer.domElement.addEventListener('click', function (event) {
-		event.preventDefault();
-		camera.updateMatrixWorld();
-		let segment = 0;
-		let residueOffset = 0;
-		if (ray.intersections.length > 0) {
-			segment = Math.floor(ray.intersections[0].faceIndex / (tube.radialSegments * 2));
-			residueOffset = Math.floor(segment/tube.segmentsMultiply);
-			
-			const residues = particle.data.residues;
-			const resseq = residues.sequence[residueOffset];
-			const cutoff = filtration.cutoff;
-			
-			const curv = residues.curvature[residueOffset][cutoff];
-			const name = residues.name[residueOffset];
-			const rgbstr = pickColor(curv);
-		
-			document.getElementById("inforesidue").innerHTML = `
-				Filtration cutoff: ${filtration.cutoff.toFixed(2)} <br>
-				Residue name: ${name} <br>
-				Resseq: ${resseq} <br>
-				Curvature: ${curv.toFixed(2)}`;
-			}
-		}
-	);
-
-	group.add(marker);
-	*/
 	
 	const axesHelper = new THREE.AxesHelper( 5 );
 	axesHelper.translateX(40);
@@ -941,6 +932,28 @@ export function init() {
 	onWindowResize();
 
 	pickColorButtons.insert();
+
+	let time = Date.now();
+	function animate() {
+		requestAnimationFrame( animate );
+		controls.update();
+	
+		group.rotation.x += animation.speedx;
+		group.rotation.y += animation.speedy;
+		group.rotation.z += animation.speedz;
+	
+		if ((Date.now() - time) > 100 && animation.filtration !== 0.0 ) {
+			filtration.cutoff += animation.filtration;
+			filtration.cutoff = filtration.cutoff > filtration.maxDistance ? filtration.minDistance : filtration.cutoff;
+			filtration.update();
+			time = Date.now();
+			//console.log('Animate cutoff and time',filtration.cutoff,time);
+		}
+	
+		controls.update();
+	
+		renderer.render( scene, camera );
+	}
 
 	parsedata().then((r) => {
 		console.log('All files parserd');
