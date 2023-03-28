@@ -412,7 +412,7 @@ const edges = {
 			//blending: THREE.AdditiveBlending,
 			transparent: this.transparent,
 			opacity: this.opacity,
-			linewidth: 10,
+			linewidth: 1,
 			linecap: 'round',
 			linejoin: 'round',
 			depthTest: true,
@@ -816,7 +816,42 @@ export function init() {
 	
 	container = document.getElementById('canvascontainer');
 	container.appendChild( renderer.domElement );
+	
+	//camera = new THREE.PerspectiveCamera( 70, window.innerWidth/window.innerHeight , 1, 5000 );
+	
+	function getContainerSize() {
+		const width = (0.7*window.innerWidth).toFixed(0);
+		const height = (0.7*window.innerHeight).toFixed(0);
+		return { 
+			width: width,
+			height: height
+		}
+	}
+	
+	const containerSize = getContainerSize(); 
+	const width = containerSize.width;
+	const height = containerSize.height;
+	const divid = 40;
+	camera = new THREE.OrthographicCamera( -width/divid, width/divid, height/divid, -height/divid, -divid, 1000 );
+	camera.position.z = 0;
 
+	controls = new TrackballControls( camera, renderer.domElement );
+	controls.minDistance = 10;
+	controls.maxDistance = 100;
+	controls.panSpeed = 10.0;
+	
+	scene = new THREE.Scene();
+	scene.background = new THREE.Color( 0xFFFFFF ); //#d3d3d3
+	
+	scene.add( camera );
+	
+	const light = new THREE.AmbientLight( 0xFFFFFF ); // 0x404040 soft white light
+	scene.add( light );
+	
+	group = new THREE.Group();
+	scene.add( group );
+
+	/*
 	const ray = {
 		caster: new THREE.Raycaster(),
 		mouse: new THREE.Vector2(),
@@ -874,43 +909,10 @@ export function init() {
 			}
 		}
 	);
-	
-	//camera = new THREE.PerspectiveCamera( 70, window.innerWidth/window.innerHeight , 1, 5000 );
-	
-	function getContainerSize() {
-		const width = (0.7*window.innerWidth).toFixed(0);
-		const height = (0.7*window.innerHeight).toFixed(0);
-		return { 
-			width: width,
-			height: height
-		}
-	}
-	
-	const containerSize = getContainerSize(); 
-	const width = containerSize.width;
-	const height = containerSize.height;
-	const divid = 40;
-	camera = new THREE.OrthographicCamera( -width/divid, width/divid, height/divid, -height/divid, -divid, 1000 );
-	camera.position.z = 10;
-
-	controls = new TrackballControls( camera, renderer.domElement );
-	controls.minDistance = 10;
-	controls.maxDistance = 100;
-	controls.panSpeed = 10.0;
-	
-	scene = new THREE.Scene();
-	scene.background = new THREE.Color( 0xFFFFFF ); //#d3d3d3
-	
-	scene.add( camera );
-	
-	const light = new THREE.AmbientLight( 0xFFFFFF ); // 0x404040 soft white light
-	scene.add( light );
-	
-	group = new THREE.Group();
-	scene.add( group );
 
 	group.add(marker);
-
+	*/
+	
 	const axesHelper = new THREE.AxesHelper( 5 );
 	axesHelper.translateX(40);
 	axesHelper.translateY(20);
