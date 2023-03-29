@@ -25,6 +25,7 @@
 		<a href="#home" class="w3-bar-item w3-button">HOME</a>
 		<a href="#portfolio" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-th"></i> RESEARCH</a>
 		<a href="#projects" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-th"></i> PROJECTS</a>
+		<a href="topologyviewer/index.html" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-diagram-project"></i> TopMolViewer </a>
 		<a href="#about" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-user"></i> ABOUT</a>
 		<a href="#contact" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-envelope"></i> CONTACT</a>
 		<!--a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-hover-red">
@@ -35,6 +36,7 @@
 	<!-- Navbar on small screens -->
 	<div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium">
 		<a href="#portfolio" class="w3-bar-item w3-button" onclick="toggleFunction()">RESEARCH</a>
+		<a href="#projects" class="w3-bar-item w3-button"><i class="fa fa-th"></i> PROJECTS</a>
 		<a href="#about" class="w3-bar-item w3-button" onclick="toggleFunction()">ABOUT</a>
 		<a href="#contact" class="w3-bar-item w3-button" onclick="toggleFunction()">CONTACT</a>
 		<!--a href="#" class="w3-bar-item w3-button">SEARCH</a-->
@@ -48,86 +50,76 @@
 	</div>
 </div>
 
-<!-- Container ghost to keep distances -->
-<!--div class="w3-content w3-container w3-padding-32" id="ghost">
-<div class="w3-row w3-center w3-dark-grey">
-asdfaf
-	</div>
-<div-->
-
 <!-- Container (About Section) -->
-<div class="w3-container" id="about" style="width:100%">
-	<div class="w3-row w3-center w3-dark-grey">
-		<h3> ABOUT ME</h3>
+<div class="w3-container" id="about">
+	<div class="w3-dark-grey w3-center">
+		<h3>ABOUT ME</h3>
 	</div>
 	<p class="w3-center"><em>Science and Research</em></p>
-	<div class="w3-content w3-row">
-		<div class="w3-col w3-half w3-center w3-padding-large">
-			<p>
-			<b>
-				<i class="fa fa-user w3-margin-right w3-left"></i>Rodrigo A. Moreira <br>
-				<i class="fa-brands fa-orcid w3-left"></i> <a href="https://orcid.org/0000-0002-7605-8722"> https://orcid.org/0000-0002-7605-8722 </a>
-			</b>
-			</p>
-			<br>
-			<img src="img/me.jpeg" class="w3-round w3-image" alt="Photo of me" width="222" height="111"> <!-- w3-opacity w3-hover-opacity-off -->
-		</div>
-		<!-- Hide this text on small devices -->
-		<div class="w3-hide-small w3-padding-large">
-			<p>
+
+	<div class="w3-half w3-center w3-padding-large">
+		<p>
+		<b>
+			<i class="fa fa-user w3-margin-right w3-left"></i>Rodrigo A. Moreira <br>
+			<i class="fa-brands fa-orcid w3-left"></i> <a href="https://orcid.org/0000-0002-7605-8722"> https://orcid.org/0000-0002-7605-8722 </a>
+		</b>
+		</p>
+		<br>
+		<img src="img/me.jpeg" class="w3-round w3-image" alt="Photo of me" width="222" height="111"> <!-- w3-opacity w3-hover-opacity-off -->
+	</div>
+	
+	<!-- Hide this text on small devices -->
+	<div class="w3-hide-small w3-padding-large">
+		<p>
 My research aims at the interface between applied mathematics, mathematical modeling, hamiltonian models, and computational physics and chemistry.
-			</p>
-			<p>
+		</p>
+		<p>
 I develop advanced physical-mathematical methods to understand the physical-chemical and functional properties of organic biopolymers, e.g protein complexes and cellulose polymers. My ultimate endeavor is to ensure that my research leads to significant advances and impact clinical therapies. In particular, this unique combination simulation and experimental data shed new light into the understanding of the evolutionary mechanism followed by the various SARS-CoV-2 mutants.
-			</p>
-			<p>
+		</p>
+		<p>
 I'm using a framework that combines for the first time data analysis from all-atom molecular dynamics (MD), computational algebraic topology and computational geometry. It enables identifying higher-order emergent topological and geometrical invariant from large biological complexes, which can also be used to create multiscale models. 
-			</p>
-			<p>
+		</p>
+		<p>
 In particular, the simple contact map analysis and hydrogen bonds network, commonly used within the structural biophysics community to create multiscale models and effective interactions, are based on pairwise interaction only. My methodology captures high-order interaction in an accurate mathematical background.
-			</p>
-		</div>
+		</p>
+	</div>
 </div>
 
 <!-- Container (projects Section) -->
 <div class="w3-container" id="projects">
-	<div class="w3-row w3-center w3-dark-grey">
-		<h3>ONGOING PROJECTS</h3>
+	<div class="w3-dark-grey w3-center">
+		<h3>ONGOING PROJECTS AND RESULTS</h3>
 	</div>
 	<p class="w3-center"><em>Projects I'm participating and recents results!</em></p>
-	<div class="w3-content">
-	<!--ul-->
-		<!--li-->
-			<b>
-			Mathematical Modelling Applied to Health<br>
-			Long-term Covid-19 Multiphase Persistent Interaction – ikur Strategia - BMTF<br>
-			</b>
-			<img src="logo-bcam-color-transparent-450-300x150.png" class="w3-image w3-round" style="height: 150px">
-			<a href="https://www.ikerbasque.net/en/news/basque-government-will-invest-additional-100-million-euros-10-years-promote-strategic-areas">
-				<img src="img/ikur_logo.png" class="w3-image w3-round" style="width: 150px">
-			</a>
-			<img src="img/curead-1.png" alt="curead-logo" class="w3-image w3-round" style="height: 150px"><br>
-		<!--/li-->
-	<!--/ul-->
-	<div class="w3-right"> <h5>
-	<ul class="w3-ul">
-		<li> <a href="topologyviewer/index.html" class="w3-hover-text-green"> March 2023 - TopMolViewer : Visualization of mathematical properties we're computing directly projected on the coordinates of molecules. </a> <li>
-		<li> March 2023 - Website now online on Github. </li>
-		<li> March 2023 - Beginning of this project. </li>
-	</ul> </h5>
+	
+	<div class="w3-half w3-center w3-padding-large">
+		<b>
+		Mathematical Modelling Applied to Health<br>
+		Long-term Covid-19 Multiphase Persistent Interaction – ikur Strategia - BMTF<br>
+		</b>
+		<img src="logo-bcam-color-transparent-450-300x150.png" class="w3-image w3-round" style="height:150px;">
+		<a href="https://www.ikerbasque.net/en/news/basque-government-will-invest-additional-100-million-euros-10-years-promote-strategic-areas">
+			<img src="img/ikur_logo.png" class="w3-image w3-round" style="width:150px;">
+		</a>
+		<img src="img/curead-1.png" alt="curead-logo" class="w3-image w3-round" style="height:130px;width:auto;"><br>
 	</div>
+	
+	<div class="w3-hide-small w3-padding-large">
+		<ul>
+			<li> <a href="topologyviewer/index.html" class="w3-hover-text-green"> March 2023 - TopMolViewer : Visualization of mathematical properties we're computing directly projected on the coordinates of molecules. </a> </li>
+			<li> March 2023 - Website now online on Github. </li>
+			<li> March 2023 - Beginning of this project. </li>
+		</ul>
 	</div>
 </div>
 
 <!-- Container (Portfolio Section) -->
 <div class="w3-container" id="portfolio">
-
-	<div class="w3-row w3-center w3-dark-grey">
-		<h3 class="w3-center">OUR RESEARCH</h3>
+	<div class="w3-dark-grey w3-center">
+		<h3>OUR RESEARCH</h3>
 	</div>
-	
 	<p class="w3-center"><em>Latest research topics. Click on the figures to get the abstracts</em></p>
-	<div class="w3-contentainer">
+	<div class="w3-container">
 		<div class="w3-panel w3-border w3-round-xxlarge">
 			<details>
 				<summary>
@@ -136,7 +128,7 @@ In particular, the simple contact map analysis and hydrogen bonds network, commo
 						<img src="img/JPhys-Complexity-2019-1.png" style="height:auto; max-width:10%" class="w3-hover-opacity" alt="Sars-CoV-2">
 					</div>	 
 					<div>
-					<ul class="w3-ul">
+					<ul>
 						<li>
 							<a href="https://doi.org/10.1088/2632-072x/ac664c" class="w3-hover-text-green"> 
 								DOI: 10.1088/2632-072x/ac664c 
@@ -162,7 +154,7 @@ We use methods and concepts of applied algebraic topology to comprehensively exp
 						<img src="img/pointmutations.png" style="height:auto; max-width:15%" class="w3-hover-opacity" alt="Point mutations">
 					</div>
 					<div style="text-align:left;">
-						<ul class="w3-ul">
+						<ul>
 							<li>
 								<a href="https://doi.org/10.1039/d0nr03969a" class="w3-hover-text-green">
 									DOI: 10.1039/d0nr03969a 
@@ -207,7 +199,7 @@ Among the most relevant proteins required by the novel coronavirus to facilitate
 						<img src="img/interfacestability.png" style="height:auto; max-width:30%" class="w3-hover-opacity" alt="Interface stability">
 					</div>
 					<div>
-					<ul class="w3-ul">
+					<ul>
 						<li>
 							<a href="https://doi.org/10.1021/acs.nanolett.1c03584" class="w3-hover-text-green"> 
 									DOI: 10.1021/acs.nanolett.1c03584 
@@ -233,7 +225,7 @@ Single-molecule AFM force spectroscopy in combination with click chemistry to me
 						<img src="img/cellulose.model-1.png" style="height:auto; max-width:20%" class="w3-hover-opacity" alt="Cellulose model">
 					</div>
 					<div>
-						<ul class="w3-ul">
+						<ul>
 							<li>
 								<a href="https://doi.org/10.3390/ijms23158505" class="w3-hover-text-green"> 
 									DOI: 10.3390/ijms23158505 
@@ -275,7 +267,7 @@ High resolution data from all-atom molecular simulations is used to parameterize
 						<img src="img/images_medium_ct-2017-00930w_0006.gif" style="height:auto; max-width:30%" class="w3-hover-opacity" alt="Otherwise">
 					</div>
 					<div>
-						<ul class="w3-ul">
+						<ul>
 							<li>
 								<a href="https://doi.org/10.1016/j.cplett.2019.04.023" class="w3-hover-text-green"> 
 									DOI: 10.1016/j.cplett.2019.04.023 
@@ -306,74 +298,62 @@ High resolution data from all-atom molecular simulations is used to parameterize
 
 <!-- Container (Contact Section) -->
 <div class="w3-container" id="contact">
-
-	<div class="w3-row w3-center w3-dark-grey">
-		<h3 class="w3-center">WHERE I WORK</h3>
+	<div class="w3-dark-grey w3-center">
+		<h3>WHERE I WORK</h3>
 	</div>
-	
-	<div class="w3-content">
-	<h3 class="w3-center">
+	<div class="w3-row w3-center">
+	<div class="w3-col w3-third">
 		<a href="http://www.bcamath.org/es/" class="w3-hover-text-green">
 			<img src="logo-bcam-color-transparent-450-300x150.png" class="w3-image w3-round" style="width: 150px"> 
 			Basque Center for Applied Mathematics
 		</a>
-	</h3>
-	
-	<p class="w3-center">
+		<p>Swing by for a cup of <i class="fa fa-coffee"></i>.</p>
+	</div>
+	<div class="w3-col w3-third">
 		<a href="http://www.bcamath.org/en/research/lines/MCEN" class="w3-hover-text-green">
 		<em> MCEN - Mathematical, Computational and Experimental Neuroscience Group </em> <br>
-		<img src="img/mcen-logo.png" style="height:auto; max-width:20%" alt="MCEN logo"><br>
+		<img src="img/mcen-logo.png" style="height:auto; max-width:30%" alt="MCEN logo"><br>
 		http://www.bcamath.org/en/research/lines/MCEN <br>
 		</a>
-	</p>
-
-	<div class="w3-large w3-margin-bottom">
+	</div>
+	<div class="w3-col w3-third">
 		<i class="fa fa-map-marker fa-fw w3-hover-text-black w3-large w3-margin-right"></i> Bilbao, Basque Country, Spain<br>
 		<i class="fa fa-phone fa-fw w3-hover-text-black w3-large w3-margin-right"></i> Phone: +34 946 56 78 42<br>
 		<i class="fa fa-envelope fa-fw w3-hover-text-black w3-large w3-margin-right"></i> http://www.bcamath.org/en/people/razevedo <br>
 	</div>
-	<p>Swing by for a cup of <i class="fa fa-coffee"></i>.</p>
 	</div>
 </div>
 
 <!-- Footer -->
-<footer class="w3-center w3-black w3-padding-8 w3-opacity ">
-
-	<div class="w3-large w3-section">
-		
+<footer class="w3-container w3-center w3-dark-grey">
 		<a href="#home" class="w3-hover-text-green"><i class="fa fa-arrow-up w3-margin-right "></i>To the top</a>		
-		
 		<i class="fa fa-font-awesome "></i>
 		<i class="fa-brands fa-github"></i>
 		<i class="fa-solid fa-c"></i>
-	
-		Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-text-green">w3.css</a>	
-	</div>
-	
-	
+		Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-text-green">w3.css</a>
 </footer>
  
 <script>
-// Change style of navbar on scroll
-window.onscroll = function() {myFunction()};
-function myFunction() {
+	// Change style of navbar on scroll
+	window.onscroll = function() {myFunction()};
+	function myFunction() {
 		var navbar = document.getElementById("myNavbar");
 		if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
 				navbar.className = "w3-bar" + " w3-card" + " w3-animate-top" + " w3-white";
 		} else {
 				navbar.className = navbar.className.replace(" w3-card w3-animate-top w3-white", "");
 		}
-}
+	}
 
-// Used to toggle the menu on small screens when clicking on the menu button
-function toggleFunction() {
+	// Used to toggle the menu on small screens when clicking on the menu button
+	function toggleFunction() {
 		var x = document.getElementById("navDemo");
 		if (x.className.indexOf("w3-show") == -1) {
 				x.className += " w3-show";
 		} else {
 				x.className = x.className.replace(" w3-show", "");
 		}
-}
+	}
 </script>
 
 </body>
