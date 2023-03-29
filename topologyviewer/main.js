@@ -290,10 +290,12 @@ const tube = {
 	},
 	findBuffer: [],
 	findAtPath: function(v1,i) {
-		const j = this.findBuffer[i];
-		if (j) {		
-			//console.log('buffered',i,j);
-			return j
+		if (i) {
+			const j = this.findBuffer[i];
+			if (j) {		
+				//console.log('buffered',i,j);
+				return j
+			}
 		}
 		let v2 = new THREE.Vector3();
 		let data = this.pathdata
@@ -410,6 +412,8 @@ const tube = {
 		}
 
 		renderer.domElement.addEventListener('mousemove', function (event) {
+			if (!tube.showMarker) {return };
+			
 			event.preventDefault();
 			// get position in canvas
 			const rect = canvas.getBoundingClientRect();
@@ -436,13 +440,27 @@ const tube = {
 				tube.markerMesh.visible = true;
 				tube.markerMesh.material.needsUpdate = true;
 				str += ` | canvas coordinates: x= ${p.x.toFixed(2)} y= ${p.y.toFixed(2)} z= ${p.z.toFixed(2)}`
+				//console.log(p);
+				//console.log(ray.intersections[0]);
+				const b = tube.findAtPath(p);
+				const resseq = particle.resseq(b);
+				const cutoff = filtration.cutoff;
+				const curv = particle.curvature(b,cutoff);
+				const resname = particle.resname(b);
+				const name = particle.name(b);
+				const rgbstr = pickColor(curv);
+				
+				str += `| Filtration cutoff: ${filtration.cutoff.toFixed(2)}
+					Id: ${resname} ${resseq} ${name}
+					Curvature: ${curv.toFixed(2)} | ${b}`;
+				
 			}
 			document.getElementById("infomouse").innerHTML = str;
 		});
-		
+		/*
 		renderer.domElement.addEventListener('click', function (event) {
 			event.preventDefault();
-			camera.updateMatrixWorld();
+			//camera.updateMatrixWorld();
 			if (ray.intersections.length > 0) {
 				const p = ray.intersections[0].point;
 				const b = tube.findAtPath(p);
@@ -462,6 +480,7 @@ const tube = {
 				}
 			}
 		);
+		*/
 	},
 	dispose: function() {
 		if(!tube.mesh) {return}
