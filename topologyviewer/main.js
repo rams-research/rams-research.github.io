@@ -46,6 +46,17 @@ let particle = {
 			}}
 		);
 		return m[this.name(i).slice(0,1)]
+	},
+	dispose: function () {
+		particle.data.particles.count = 0;
+		particle.data.particles.coordinates.length = 0;
+		particle.data.particles.name.length = 0;
+		particle.data.particles.resid.length = 0;
+		
+		particle.data.residues.count = 0;
+		particle.data.residues.name.length = 0;
+		particle.data.residues.sequence.length = 0;
+		particle.data.residues.curvature.length = 0;
 	}
 }
 
@@ -80,9 +91,9 @@ const animation = {
 	filtration: 0.0,
 }
 
-async function parsedata() {
+async function parsedata(filename) {
 	try {
-		let response = await fetch('1A5R_frame99999.data');
+		let response = await fetch(filename);
 		let text = await response.text();
 		let rescount = 0;
 		let state = false;
@@ -140,7 +151,10 @@ async function parsedata() {
 }
 
 const pickColorButtons = {
+	isInserted: false,
 	insert: function() {
+		if (this.isInserted) {return}
+		this.isInserted = true;
 		function f(color,val) {
 			const str = `<button
 					onclick="setColorButton(this,'${color}')"
@@ -216,11 +230,11 @@ const pickColorButtons = {
 }
 
 const tube = {
+	pathdata: [],
 	path: false,
 	geometry: false,
 	mesh: false,
 	material: false,
-	mapsegments: [],
 	visible: true,
 	segmentsMultiply: 3,
 	radius: 0.10,
@@ -237,11 +251,13 @@ const tube = {
 		const translate = points.geometry.getAttribute('translate');
 		for(let k=0; k<translate.count; k++) {
 			const name = particle.name(k);
+			//if (name == 'CA' || name == 'C' || name == 'N') {
 			if (name == 'CA') {
 				const x = translate.array[3*k + 0];
 				const y = translate.array[3*k + 1];
 				const z = translate.array[3*k + 2];
 				coords.push(new THREE.Vector3(x,y,z));
+				this.pathdata.push(k,x,y,z);
 			}
 		}
 		this.nnodes = coords.length;
@@ -269,63 +285,56 @@ const tube = {
 		this.mesh =  new THREE.Mesh( this.geometry, this.material );
 		group.add( this.mesh );
 	},
-	updatemapsegments: function() {
-		const mapsegments = this.mapsegments;
-		console.log('Tube updatemapsegments...');
-		const geometry = this.geometry;
-		const vec1 = new THREE.Vector3(); // cordinates of base vectors
-		const vec2 = new THREE.Vector3(); // coordinates of point
-		function findCA() {
-			let dist = false;
-			let point = -1;
-			const translate = points.geometry.getAttribute('translate');
-			for(let k=0; k<translate.count; k++) {
-				const name = particle.name(k);
-				if (name == 'CA') {
-					vec2.setX(translate.array[3*k + 0]);
-					vec2.setY(translate.array[3*k + 1]);
-					vec2.setZ(translate.array[3*k + 2]);
-					const d = vec2.distanceTo(vec1)
-					if (!dist || dist > d) {
-						dist = d;
-						point = k;
-					}
-				}
+	findBuffer: [],
+	findAtPath: function(v1,i) {
+		const j = this.findBuffer[i];
+		if (j) {		
+			//console.log('buffered',i,j);
+			return j
+		}
+		let v2 = new THREE.Vector3();
+		let data = this.pathdata
+		let dist = 1.0e10;
+		let b = false;
+		for(let k=0; k<data.length; k+=4) {
+			const x = data[k+1];
+			const y = data[k+2];
+			const z = data[k+3];
+			v2.set(x,y,z);
+			const d = v2.distanceTo(v1);
+			if (d<dist) {
+				dist = d;
+				b = data[k+0];
 			}
-			return point;
 		}
-		/* segment start from 0 */
-		const position = geometry.getAttribute('position');
-		for (let b=0; b<position.count; b++) {
-			vec1.setX(geometry.attributes.position.getX(b));
-			vec1.setY(geometry.attributes.position.getY(b));
-			vec1.setZ(geometry.attributes.position.getZ(b));
-			mapsegments[b] = findCA(b);
-		}
+		this.findBuffer[i] = b;
+		return b
 	},
 	colors: function(isColor) {
 		console.log('Tube colors...');
 		const geometry = this.geometry;
 		const position = geometry.getAttribute('position');
 		const particlesColors = points.geometry.getAttribute('particlesColors');
-		for (let base=0; base<position.count; base++) {
+		const v1 = new THREE.Vector3(0.0,0.0,0.0);
+		for (let i=0; i<position.count; i++) {
 			let r = 0.0;
 			let g = 0.0;
 			let b = 0.0;
 			if (isColor) {
-				const p = this.mapsegments[base];
+				const x = position.array[i*3+0];
+				const y = position.array[i*3+1];
+				const z = position.array[i*3+2];
+				const p = this.findAtPath(v1.set(x,y,z),i);
 				r = particlesColors.array[p*3+0];
 				g = particlesColors.array[p*3+1];
 				b = particlesColors.array[p*3+2];
 			}
-			geometry.attributes.color.setXYZ(base,r,g,b);
+			geometry.attributes.color.setXYZ(i,r,g,b);
 		}
 		geometry.attributes.color.needsUpdate = true;
 	},
 	updategeometry: function() {
 		this.geometry = new THREE.TubeGeometry( this.path , this.segmentsMultiply*this.nnodes, this.radius, this.radialSegments, false ).toNonIndexed();
-		
-		this.updatemapsegments();
 		
 		let colors = [];
 		for (let i = 0; i < this.geometry.attributes.position.count; i++){ colors.push(0,0,0); }
@@ -333,6 +342,7 @@ const tube = {
 		
 		this.mesh =  new THREE.Mesh( this.geometry, this.material );
 		
+		this.findBuffer.length = 0;	
 		this.colors(filtration.updateTubeColors);
 	},
 	update: function() {
@@ -428,28 +438,36 @@ const tube = {
 		renderer.domElement.addEventListener('click', function (event) {
 			event.preventDefault();
 			camera.updateMatrixWorld();
-			let segment = 0;
-			let residueOffset = 0;
 			if (ray.intersections.length > 0) {
-				segment = Math.floor(ray.intersections[0].faceIndex / (tube.radialSegments * 2));
-				residueOffset = Math.floor(segment/tube.segmentsMultiply);
+				const p = ray.intersections[0].point;
+				const b = tube.findAtPath(p);
 					
-				const residues = particle.data.residues;
-				const resseq = residues.sequence[residueOffset];
+				const resseq = particle.resseq(b);
 				const cutoff = filtration.cutoff;
 				
-				const curv = residues.curvature[residueOffset][cutoff];
-				const name = residues.name[residueOffset];
+				const curv = particle.curvature(b,cutoff);
+				const resname = particle.resname(b);
+				const name = particle.name(b);
 				const rgbstr = pickColor(curv);
 				
 				document.getElementById("inforesidue").innerHTML = `
-					Filtration cutoff: ${filtration.cutoff.toFixed(2)} <br>
-					Residue name: ${name} <br>
-					Resseq: ${resseq} <br>
+					Filtration cutoff: ${filtration.cutoff.toFixed(2)}
+					Id: ${resname} ${resseq} ${name}
 					Curvature: ${curv.toFixed(2)}`;
 				}
 			}
 		);
+	},
+	dispose: function() {
+		if(!tube.mesh) {return}
+		group.remove(tube.mesh);
+		scene.remove(tube.mesh);
+		tube.material.dispose(); tube.material = false;
+		tube.geometry.dispose(); tube.geometry = false;
+		tube.path = false;
+		tube.mesh = false;
+		tube.pathdata.length = 0;
+		tube.findBuffer.length = 0;
 	}
 }
 
@@ -459,6 +477,7 @@ const edges = {
 	opacity: 0.2,
 	mesh: false,
 	geometry: false,
+	material: false,
 	update: function() {
 		if (this.mesh !== false) {
 			this.mesh.geometry.dispose();
@@ -469,7 +488,7 @@ const edges = {
 		
 		if (this.visible === false) { return }
 		
-		const material = new THREE.LineBasicMaterial( {
+		this.material = new THREE.LineBasicMaterial( {
 			vertexColors: true,
 			//blending: THREE.AdditiveBlending,
 			transparent: this.transparent,
@@ -481,7 +500,7 @@ const edges = {
 			depthWrite: true
 		} );
 	
-		this.mesh = new THREE.LineSegments( this.geometry, material );
+		this.mesh = new THREE.LineSegments( this.geometry, this.material );
 		
 		const list = filtration.list;
 		let numConnected = 0;
@@ -605,6 +624,14 @@ const edges = {
 		//folder.add( edges, 'setDistance', this.minDistance, this.maxDistance, 0.01 ).onChange( onUpdate );
 		folder.add( edges, 'transparent', true ).onChange( onUpdate );
 		folder.add( edges, 'opacity', 0.1, 1.0, 0.01).onChange(onUpdate);
+	},
+	dispose: function() {
+		if (!edges.mesh) { return }
+		group.remove(edges.mesh);
+		scene.remove(edges.mesh);
+		edges.material.dispose(); edges.material = false;
+		edges.geometry.dispose(); edges.geometry = false;
+		edges.mesh = false;
 	}
 }
 
@@ -775,19 +802,25 @@ const points = {
 				sumResseq += curv;
 			}
 		}
-		const avg = sumResseq/countResseq;
-		const rgbstr = pickColor(avg); 
+		function boxedStr(color,str) {
+			return `<div class="w3-round" style="padding: 0px 15px 0px 15px; border: 1px solid ${color}; margin: 1px 2px;"> ${str} </div>`
+		}
 		function getColorCurv() {
 			const curv = points.avgColorsCurv;
+			const color = pickColor(curv)[3];
 			if (curv != false) {
-				return colorFont(pickColor(curv)[3],`Average selected residues/curvature: ${curv.toFixed(2)}`);
+				return boxedStr(color,`Average selected residues/curvature: ${curv.toFixed(2)}`);
 			 }
 			 return ''
 		}
+		const avg = sumResseq/countResseq;
+		const rgbstr = pickColor(avg);
+		const color = rgbstr[3];
 		document.getElementById("infoeuler").innerHTML = `
 			Filtration cutoff: ${cutoff} <br>
-			Euler Characteristics: ${sum.toFixed(2)} <br>
-			${colorFont(rgbstr[3],'Average curvature per residue: '+avg.toFixed(2))}<br>` + getColorCurv();
+			Euler Characteristics: ${sum.toFixed(2)} <br>` 
+			+ boxedStr(color,`Average curvature per residue: ${avg.toFixed(2)} <br>`)
+			+ getColorCurv()
 	},
 	gui: function() {
 		console.log('Points GUI...');
@@ -801,6 +834,14 @@ const points = {
 		//folder.addColor( points, 'color').onChange( onUpdate );
 		folder.add( points, 'scale', 0.1, 2.0, 0.1 ).onChange( onUpdate );
 		//folder.add( points, 'sizeAttenuation', true ).onChange( onUpdate );
+	},
+	dispose: function() {
+		if (! points.mesh) { return }
+		group.remove(points.mesh);
+		scene.remove(points.mesh);
+		points.material.dispose(); points.material = false;
+		points.geometry.dispose(); points.geometry = false;
+		points.mesh = false;
 	}
 }
 
@@ -851,19 +892,45 @@ const filtration = {
 		folder.add( filtration, 'cutoff', this.minDistance, this.maxDistance, 0.01 ).listen().onChange( onUpdate );
 		folder.add( filtration, 'updateEdgesColors', true ).onChange( onUpdate );
 		folder.add( filtration, 'updateTubeColors', true ).onChange( onUpdate );
-	}	
+	},
+	dispose: function() {
+		filtration.list.length = 0;
+	}
 }
 
 // EXPORTED FUNCTIONS
 
+let animationFrame = true;
+
 export function setColorButton(element,color) { pickColorButtons.setColor(element,color); }
 export function setAAColorButton(element,aa) { pickColorButtons.setAA(element,aa); }
 
-export function init() {
-	try {
+export function stopAndClear() { animationFrame = false; }
+
+function disposeAll() {
+	tube.dispose();
+	edges.dispose();
+	points.dispose();
+	filtration.dispose();
+	particle.dispose();
+			
+	group = false;
+	camera = false;
+	scene = false;
+	container = false;
+	renderer = false;
 	
-	gui = new GUI({autoPlace: false} );
-	document.getElementById('guicontainer').appendChild(gui.domElement);
+	//let c = document.getElementById("maincanvas");
+	//let ctx = c.getContext("2d");
+	//ctx.fillStyle = "white";
+	//ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+export function topmolviewer(filename) {
+	try {
+	disposeAll();
+	
+	pickColorButtons.insert();
 	
 	canvas = document.getElementById('maincanvas');
 	
@@ -918,6 +985,23 @@ export function init() {
 	axesHelper.translateY(20);
 	scene.add( axesHelper );
 	*/
+	
+	if (!gui) {
+		gui = new GUI({autoPlace: false} );
+		console.log('Animation GUI...');
+		const folder = gui.addFolder( 'Animation' );
+		folder.add( animation, 'speedx', 0.0, 0.01, 0.001);
+		folder.add( animation, 'speedy', 0.0, 0.01, 0.001);
+		folder.add( animation, 'speedz', 0.0, 0.01, 0.001);
+		folder.add( animation, 'filtration', 0.0, 0.05, 0.001);
+		document.getElementById('guicontainer').appendChild(gui.domElement);
+		filtration.gui();
+		edges.gui();
+		points.gui();
+		tube.gui();
+		gui.open();
+	}
+	
 	function onWindowResize() {
 		const containerSize = getContainerSize(); 
 		const width = containerSize.width;
@@ -940,55 +1024,43 @@ export function init() {
 	window.addEventListener( 'resize', onWindowResize );
 	onWindowResize();
 
-	pickColorButtons.insert();
-
 	let time = Date.now();
 	function animate() {
-		requestAnimationFrame( animate );
-		controls.update();
+		if (animationFrame == false) {
+			console.log('Stopping animation frame!');
+			disposeAll();
+			
+		} else {	
+			controls.update();
 	
-		group.rotation.x += animation.speedx;
-		group.rotation.y += animation.speedy;
-		group.rotation.z += animation.speedz;
+			group.rotation.x += animation.speedx;
+			group.rotation.y += animation.speedy;
+			group.rotation.z += animation.speedz;
 	
-		if ((Date.now() - time) > 100 && animation.filtration !== 0.0 ) {
-			filtration.cutoff += animation.filtration;
-			filtration.cutoff = filtration.cutoff > filtration.maxDistance ? filtration.minDistance : filtration.cutoff;
-			filtration.update();
-			time = Date.now();
-			//console.log('Animate cutoff and time',filtration.cutoff,time);
+			if ((Date.now() - time) > 100 && animation.filtration !== 0.0 ) {
+				filtration.cutoff += animation.filtration;
+				filtration.cutoff = parseFloat(filtration.cutoff.toFixed(2));
+				filtration.cutoff = filtration.cutoff > filtration.maxDistance ? filtration.minDistance : filtration.cutoff;
+				filtration.update();
+				time = Date.now();
+				//console.log('Animate cutoff and time',filtration.cutoff,time);
+			}
+	
+			controls.update();
+			renderer.render( scene, camera );
+		
+			animationFrame = requestAnimationFrame( animate );
 		}
-	
-		controls.update();
-	
-		renderer.render( scene, camera );
 	}
 
-	parsedata().then((r) => {
+	parsedata(filename).then((r) => {
 		console.log('All files parserd');
-		
-		console.log('Animation GUI...');
-		const folder = gui.addFolder( 'Animation' );
-		folder.add( animation, 'speedx', 0.0, 0.01, 0.001);
-		folder.add( animation, 'speedy', 0.0, 0.01, 0.001);
-		folder.add( animation, 'speedz', 0.0, 0.01, 0.001);
-		folder.add( animation, 'filtration', 0.0, 0.05, 0.001);
-		
 		filtration.init();
-		filtration.gui();
-		
 		points.init();
-		points.gui();
-		
 		edges.init();
-		edges.gui();
-		
 		tube.init();
-		tube.gui();
-
-		gui.open();
-		
 		filtration.update();
+		animationFrame = true;
 		animate();
 	});
 	

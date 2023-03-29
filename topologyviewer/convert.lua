@@ -43,7 +43,7 @@ for k=1,#atoms do
 		print''
 		oldresnum = resnum
 	end
-	print(string.format('%s %.6f %.6f %.6f',name,x,y,z))
+	print(string.format('%s %.3f %.3f %.3f',name,x,y,z))
 end
 end
 

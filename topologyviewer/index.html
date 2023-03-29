@@ -10,9 +10,18 @@
 		<script src="../fontawesome_c6514dbe78.js" crossorigin="anonymous"></script>
 		<script type = "module">
 			import * as module from './main.js'
-			module.init();
+			window.topmolviewer = function () { 
+				const filename = document.getElementById('fileOption').value;
+				module.topmolviewer(filename);
+				console.log(filename);
+			}
 			window.setColorButton = module.setColorButton;
 			window.setAAColorButton = module.setAAColorButton;
+			
+			module.topmolviewer(document.getElementById('fileOption').value);
+			
+			window.disposeAll = module.stopAndClear;
+			//window.cancelAnimationFrame(window.requestAnimationFrame());
 		</script>
 		<script type="text/javascript">
 			function saveCanvas() {
@@ -59,11 +68,11 @@
 	<body>
 		<div class="w3-container w3-center w3-light-green">
 			<div class="w3-row">
-				<div id="info" class="w3-col w3-quarter"> Version: 03272023<br> <i class="fas fa-copyright" alt="(C)"></i> Rodrigo A. Moreira 2023 <br>  </div>
+				<div id="info" class="w3-col w3-quarter"> Version: 03292023<br> <a href="../index.html"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back to main page</a> </div>
 				<div class="w3-col w3-half">
 					Visualization of Topogical Simplicial Complexes from Proteins<br>
-					Basque Center for Applied Mathematics<br>
-					<a href="../index.html"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back to main page</a>
+					<a href="http://rams-research.github.io/index.html"> <i class="fas fa-copyright" alt="(C)"></i> Rodrigo A. Moreira 2023 </a><br>
+					<a href="http://www.bcamath.org/en/people/razevedo"> Research Fellow @ BCAM </a>
 				</div>
 				<div class="w3-col w3-quarter"> <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>. </div>
 			</div>
@@ -71,11 +80,16 @@
 		<div class="w3-container">
 			<div class="w3-row-padding">
 				<div id="guicontainer" class="w3-col" style="width:260px"> </div>
-				<div class="w3-col l1 w3-leftbar w3-border-light-green" style="height:120px; width: 140px;">
-					<button id="screenshot" class="w3-button w3-border" type="button" onclick="saveCanvas()"> Save canvas </button>
-					<!--button id="loadfile" type="button" class="row" style="width:100px"> Load file </button-->
+				<div class="w3-col w3-leftbar w3-border-light-green" style="width: 140px; height:120px;">
+					<button id="screenshot" class="w3-button w3-border" type="button" onclick="saveCanvas()" style="width:100%;"> Save canvas </button>
+					<select class="w3-select w3-border" id="fileOption" style="margin: 2px 0px; padding: 11px 0px 11px 0px; ">
+						<option value="" disabled >Molecules</option>
+					 	<option value="1A5R_frame413.data" selectec onclick="topmolviewer()">PDB 1A5R / 1</option>
+					 	<option value="1A5R_frame99999.data" onclick="topmolviewer()" style="width:100%">PDB 1A5R / 2</option>
+					 </select>
+					 <!-- button class="w3-button w3-border" type="button" onclick="disposeAll()" style="width:100%"> Clear/Stop </button -->
 				</div>
-				<div id="infoeuler" class="w3-col w3-leftbar w3-border-light-green" style="width:320px; height:120px; color:white; background:#3d3d3d;">
+				<div id="infoeuler" class="w3-col w3-leftbar w3-border-light-green" style="width:350px; height:120px;">
 					Filtration cutoff: <br>
 					Euler Characteristics: <br>
 					Average Euler Characteristic: 
@@ -85,7 +99,7 @@
 					<div id="pickcolorbutton" class="w3-bar"> </div>
 				</div>
 				<div id="pickaabutton" class="w3-col w3-bar w3-leftbar w3-border-light-green" style="width:500px; height:120px"></div>
-				<div id="inforesidue" class="w3-col l2 w3-hide-medium w3-leftbar w3-border-light-green"></div> <!-- style="height:120px;" -->
+				<div id="inforesidue" class="w3-col w3-half w3-hide-medium w3-leftbar w3-border-light-green"></div> <!-- style="height:120px;" -->
 				<div id="infomouse"   class="w3-col w3-half w3-hide-medium w3-leftbar w3-border-light-green"></div>
 				<!--div id="infotubeintersection" class="w3-col l2 w3-leftbar w3-border-light-green" style="margin:10px; padding: 10px; height:90px"></div-->
 				<div id="canvascontainer" class="w3-col l1">
