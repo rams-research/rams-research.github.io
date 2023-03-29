@@ -1,12 +1,11 @@
-/* custom styling for all icons */
 .fa,
 .fa-solid,
 .fa-brands, 
 .fa-sharp-solid {
-  color: tomato;
-  background-color: papayawhip;
-  border-radius: 0.2em;
-  padding: 0.3em;
+	color: black;
+            background-color: #f6f6f6;
+            border-radius: 0.2em;
+            padding: 0.3em;
 }
 
 
@@ -35,25 +34,6 @@ summary:active{
   color:black;
 }
 
-.container {
-  overflow-x: auto;
-  display: grid;
-  flex: 1;
-  flex-wrap: wrap;
-  align-items: center;
-  grid-auto-flow: row;
-  margin: 0 auto;
-}
-
-.boxed {
-  flex: 1;
-  border-radius: 25px;
-  border: 2px solid;
-  padding: 10px;
-  margin: 3px;
-  border-color: #C8C8C8;
-}
-
 /* Create a Parallax Effect */
 .bgimg-1, .bgimg-2, .bgimg-3 {
   background-attachment: fixed;
@@ -68,14 +48,6 @@ summary:active{
   min-height: 100%;
   width:100%;
   background-size: auto;
-}
-
-.w3-wide {
-  letter-spacing: 10px;
-}
-
-.w3-hover-opacity {
-  cursor: pointer;
 }
 
 /* Turn off parallax scrolling for tablets and phones */

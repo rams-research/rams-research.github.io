@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="w3.css">
 	<link rel="stylesheet" href="custom.css">
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+	<!-- link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato" -->
 	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
 	<!--script src="https://kit.fontawesome.com/c6514dbe78.js" crossorigin="anonymous"></script-->
 	<script src="fontawesome_c6514dbe78.js" crossorigin="anonymous"></script>
@@ -44,7 +44,7 @@
 <!-- First Parallax Image with Logo Text -->
 <div class="bgimg-1 w3-display-container w3-opacity" id="home">
 	<div class="w3-display-middle" style="white-space:nowrap;">
-		<span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">RAMS <span class="w3-hide-small">RESEARCH</span> </span>
+		<span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">RAMS RESEARCH</span>
 	</div>
 </div>
 
@@ -62,7 +62,7 @@ asdfaf
 	</div>
 	<p class="w3-center"><em>Science and Research</em></p>
 	<div class="w3-content w3-row">
-		<div class="w3-col m6 w3-center w3-padding-large">
+		<div class="w3-col w3-half w3-center w3-padding-large">
 			<p>
 			<b>
 				<i class="fa fa-user w3-margin-right w3-left"></i>Rodrigo A. Moreira <br>
@@ -73,7 +73,7 @@ asdfaf
 			<img src="img/me.jpeg" class="w3-round w3-image" alt="Photo of me" width="222" height="111"> <!-- w3-opacity w3-hover-opacity-off -->
 		</div>
 		<!-- Hide this text on small devices -->
-		<div class="m6 w3-hide-small w3-padding-large">
+		<div class="w3-hide-small w3-padding-large">
 			<p>
 My research aims at the interface between applied mathematics, mathematical modeling, hamiltonian models, and computational physics and chemistry.
 			</p>
@@ -127,13 +127,13 @@ In particular, the simple contact map analysis and hydrogen bonds network, commo
 	</div>
 	
 	<p class="w3-center"><em>Latest research topics. Click on the figures to get the abstracts</em></p>
-	<div class="w3-content">
-		<div class="boxed">
+	<div class="w3-contentainer">
+		<div class="w3-panel w3-border w3-round-xxlarge">
 			<details>
 				<summary>
-					Applied Topology, Topological data analysis, Topological energy and dynamics
+					<b>Applied Topology, Topological data analysis, Topological energy and dynamics</b>
 					<div class="w3-center">
-						<img src="img/JPhys-Complexity-2019-1.png" style="height:180px;" class="w3-hover-opacity" alt="Sars-CoV-2">
+						<img src="img/JPhys-Complexity-2019-1.png" style="height:auto; max-width:10%" class="w3-hover-opacity" alt="Sars-CoV-2">
 					</div>	 
 					<div>
 					<ul class="w3-ul">
@@ -153,13 +153,13 @@ We use methods and concepts of applied algebraic topology to comprehensively exp
 			</details>
 		</div>
 		
-		<div class="boxed">		
+		<div class="w3-panel w3-border w3-round-xxlarge">		
 			<details>
 				<summary>
-					SARS-CoV-2, Spike Protein, Molecular Dynamics
+					<b>SARS-CoV-2, Spike Protein, Molecular Dynamics</b>
 					<div class="w3-center">
-						<img src="img/mechanostability.png" style="height:180px;" class="w3-hover-opacity" alt="Sars-CoV-2">
-						<img src="img/pointmutations.png" style="height:180px;" class="w3-hover-opacity" alt="Point mutations">
+						<img src="img/mechanostability.png" style="height:auto; max-width:15%" class="w3-hover-opacity" alt="Sars-CoV-2">
+						<img src="img/pointmutations.png" style="height:auto; max-width:15%" class="w3-hover-opacity" alt="Point mutations">
 					</div>
 					<div style="text-align:left;">
 						<ul class="w3-ul">
@@ -199,12 +199,12 @@ Among the most relevant proteins required by the novel coronavirus to facilitate
 			</details>
 		</div>
 
-		<div class="boxed">
+		<div class="w3-panel w3-border w3-round-xxlarge">
 			<details>
 				<summary>
-					Protein Interface Stability
+					<b>Protein Interface Stability</b>
 					<div class="w3-center">
-						<img src="img/interfacestability.png" style="height:180px;" class="w3-hover-opacity" alt="Interface stability">
+						<img src="img/interfacestability.png" style="height:auto; max-width:30%" class="w3-hover-opacity" alt="Interface stability">
 					</div>
 					<div>
 					<ul class="w3-ul">
@@ -224,13 +224,13 @@ Single-molecule AFM force spectroscopy in combination with click chemistry to me
 			</details>
 		</div>
 		
-		 <div class="boxed">
+		 <div class="w3-panel w3-border w3-round-xxlarge">
 			<details>
 				<summary>
-					Coarse-Grain modeling, Cellulose Fibrils, MARTINI 3
+					<b>Coarse-Grain modeling, Cellulose Fibrils, MARTINI 3</b>
 					<div class="w3-center">
-						<img src="img/978-1-0716-1546-1.webp" style="height:180px;" class="w3-hover-opacity" alt="">
-						<img src="img/cellulose.model-1.png" style="height:180px;" class="w3-hover-opacity" alt="Cellulose model">
+						<img src="img/978-1-0716-1546-1.webp" style="height:auto; max-width:10%" class="w3-hover-opacity" alt="">
+						<img src="img/cellulose.model-1.png" style="height:auto; max-width:20%" class="w3-hover-opacity" alt="Cellulose model">
 					</div>
 					<div>
 						<ul class="w3-ul">
@@ -267,12 +267,12 @@ High resolution data from all-atom molecular simulations is used to parameterize
 			</details>
 		</div>
 		
-		<div class="boxed">
+		<div class="w3-panel w3-border w3-round-xxlarge">
 			<details>
 				<summary>
-					Old works, Hamiltonian model, Exact diagonalization, Quantum Chemistry
+					<b>Old works, Hamiltonian model, Exact diagonalization, Quantum Chemistry</b>
 					<div class="w3-center">
-						<img src="img/images_medium_ct-2017-00930w_0006.gif" style="height:160px;" class="w3-hover-opacity" alt="Book Chapter">
+						<img src="img/images_medium_ct-2017-00930w_0006.gif" style="height:auto; max-width:30%" class="w3-hover-opacity" alt="Otherwise">
 					</div>
 					<div>
 						<ul class="w3-ul">
@@ -322,7 +322,7 @@ High resolution data from all-atom molecular simulations is used to parameterize
 	<p class="w3-center">
 		<a href="http://www.bcamath.org/en/research/lines/MCEN" class="w3-hover-text-green">
 		<em> MCEN - Mathematical, Computational and Experimental Neuroscience Group </em> <br>
-		<img src="img/mcen-logo.png" style="height:160px;" alt="MCEN logo"><br>
+		<img src="img/mcen-logo.png" style="height:auto; max-width:20%" alt="MCEN logo"><br>
 		http://www.bcamath.org/en/research/lines/MCEN <br>
 		</a>
 	</p>
