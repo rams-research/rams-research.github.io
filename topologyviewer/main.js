@@ -4,7 +4,7 @@ import { GUI } from './js/lil-gui.module.min.js'
 
 // GLOBAL OBJECTS
 
-let canvas, container, renderer, scene, camera, group, gui;
+let canvas, container, renderer, scene, camera, group, gui, ratio;
 
 let particle = {
 	data: {
@@ -180,8 +180,11 @@ const pickColorButtons = {
 		}
 		// cutoffs
 		let row1 = f('#D3D3D3','< -5.5');
+		let count = 1;
 		for (let k=-5.0; k<=2.0; k+=1.0) {
+			count += 1;
 			row1 += f(pickColor(k)[3],k.toFixed(1));
+			if (count == 5) { row1+="<br>"; count = 0}
 		}
 		row1 += f('#D3D3D3','> 2.5');
 		document.getElementById("pickcolorbutton").innerHTML = row1;
@@ -412,17 +415,19 @@ const tube = {
 			const rect = canvas.getBoundingClientRect();
 			const left = rect.left + window.scrollX;
 			const top  = rect.top  + window.scrollY;
-			ray.mouse.x =  (event.clientX-left)/container.width  * 2 - 1;
-			ray.mouse.y = -(event.clientY-top) /container.height * 2 + 1;
+			const width = rect.width;
+			const height = rect.height;
+			//console.log(rect);
+			ray.mouse.x =  (event.clientX-rect.x)/width  * 2 - 1;
+			ray.mouse.y = -(event.clientY-rect.y)/height * 2 + 1;
 			
 			let str = `mouse: x= ${ray.mouse.x.toFixed(2)} y=${ray.mouse.y.toFixed(2)}`;
-			
 			
 			// get tube intersection and set marker
 			ray.caster.setFromCamera(ray.mouse, camera);
 			ray.intersections = ray.caster.intersectObject(tube.mesh);
 			
-			tube.markerMesh.visible = false;
+			tube.markerMesh.visible = true;
 			
 			if ( ray.intersections.length > 0 ) {
 				//console.log('intersection',ray.intersections[0].point);
@@ -696,6 +701,7 @@ const points = {
 		
 			geometry.setAttribute('position', new THREE.BufferAttribute( position, 3 ) );
 			geometry.computeBoundingBox();
+			console.log('Bounding box',geometry.boundingBox);
 			geometry.center();
 
 			console.log( 'This molecule has ' + position.length + ' positions' );
@@ -960,6 +966,7 @@ export function topmolviewer(filename) {
 	const containerSize = getContainerSize(); 
 	const width = containerSize.width;
 	const height = containerSize.height;
+	const ratio = width/height;
 	const divid = 30;
 	camera = new THREE.OrthographicCamera( -width/divid, width/divid, height/divid, -height/divid, -divid, 1000 );
 	camera.position.z = 10;
@@ -1002,22 +1009,26 @@ export function topmolviewer(filename) {
 		gui.open();
 	}
 	
+	
+	
 	function onWindowResize() {
 		const containerSize = getContainerSize(); 
 		const width = containerSize.width;
 		const height = containerSize.height;
+		
+		//console.log('windows container now is ',width,height);
 	
 		//const width = window.innerWidth; //containerSize.width;
 		//const height = window.innerHeight; //containerSize.height;
 	
-		container.setAttribute("style",`width:${width}px; height:${height}px`);
-		container.width = width;
-		container.height = height;
+		//container.setAttribute("style",`width:${width}px; height:${height}px`);
+		//container.width = width;
+		//container.height = height;
 	
-		camera.aspect = width/height;
+		camera.aspect = ratio;
 		camera.updateProjectionMatrix();
 	
-		renderer.setSize(width, height);
+		renderer.setSize(width,width/ratio);
 		renderer.render(scene, camera );
 	}
 

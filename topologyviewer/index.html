@@ -79,8 +79,9 @@
 		</div>
 		<div class="w3-container">
 			<div class="w3-row-padding">
-				<div id="guicontainer" class="w3-col" style="width:260px"> </div>
-				<div class="w3-col w3-leftbar w3-border-light-green" style="width: 140px; height:120px;">
+				<div id="guicontainer" class="w3-col w3-third" style="width:auto"> </div>
+				<div class="w3-rest">
+				<div class="w3-col w3-leftbar w3-border-light-green" style="height:120px;width:auto">
 					<button id="screenshot" class="w3-button w3-border" type="button" onclick="saveCanvas()" style="width:100%;"> Save canvas </button>
 					<select class="w3-select w3-border" id="fileOption" style="margin: 2px 0px; padding: 11px 0px 11px 0px; ">
 						<option value="" disabled >Molecules</option>
@@ -89,21 +90,25 @@
 					 </select>
 					 <!-- button class="w3-button w3-border" type="button" onclick="disposeAll()" style="width:100%"> Clear/Stop </button -->
 				</div>
-				<div id="infoeuler" class="w3-col w3-leftbar w3-border-light-green" style="width:350px; height:120px;">
+				<div id="infoeuler" class="w3-col w3-leftbar w3-border-light-green" style="height:120px;width:auto">
 					Filtration cutoff: <br>
 					Euler Characteristics: <br>
 					Average Euler Characteristic: 
 				</div>
-				<div class="w3-col w3-leftbar w3-border-light-green" style="width:340px; height:120px">
-					Highlight a color representing a curvature value or a residue type: <br>
+				<div class="w3-col w3-leftbar w3-border-light-green" style="height:120px;width:auto">
+					Highlight a color representing a curvature value <br> or a residue type: <br>
 					<div id="pickcolorbutton" class="w3-bar"> </div>
 				</div>
-				<div id="pickaabutton" class="w3-col w3-bar w3-leftbar w3-border-light-green" style="width:500px; height:120px"></div>
-				<div id="inforesidue" class="w3-col w3-half w3-hide-medium w3-leftbar w3-border-light-green"></div> <!-- style="height:120px;" -->
-				<div id="infomouse"   class="w3-col w3-half w3-hide-medium w3-leftbar w3-border-light-green"></div>
+				<div id="pickaabutton" class="w3-col w3-bar w3-leftbar w3-border-light-green" style="height:120px;width:auto"></div>
 				<!--div id="infotubeintersection" class="w3-col l2 w3-leftbar w3-border-light-green" style="margin:10px; padding: 10px; height:90px"></div-->
-				<div id="canvascontainer" class="w3-col l1">
+				
+				<div id="canvascontainer" class="w3-col" sytle="width:auto">
 					<canvas id="maincanvas"></canvas>
+				</div>
+				
+				<div id="infomouse"   class="w3-col w3-hide-medium w3-leftbar w3-border-light-green" sytle="width:auto"></div>
+				<div id="inforesidue" class="w3-col w3-hide-medium w3-leftbar w3-border-light-green" sytle="width:auto"></div> <!-- style="height:120px;" -->
+				
 				</div>
 			</div>
 		</div>
