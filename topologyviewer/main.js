@@ -957,42 +957,30 @@ export function topmolviewer(filename) {
 	
 	pickColorButtons.insert();
 	
+	container = document.getElementById('canvascontainer');
 	canvas = document.getElementById('maincanvas');
-	
-	function getContainerSize() {
-		const width =  (0.7*window.innerWidth).toFixed(0);
-		const height = (0.7*window.innerHeight).toFixed(0);
-		console.log(width,height);
-		return { 
-			width: width,
-			height: height
-		}
-	}
-	
-	const containerSize = getContainerSize(); 
-	const width = containerSize.width;
-	const height = containerSize.height;
-	const ratio = width/height;
 	
 	renderer = new THREE.WebGLRenderer( {
 		canvas: canvas,
 		antialias: true,
 		preserveDrawingBuffer: true
 	});
+	
 	renderer.setClearColor(0x333333);
-	
-	renderer.setPixelRatio( ratio );
 	renderer.outputEncoding = THREE.sRGBEncoding;
-	
-	container = document.getElementById('canvascontainer');
 	container.appendChild( renderer.domElement );
+	//const rect = container.getBoundingClientRect();	
+	const ratio = 0.4;
 	
-	//camera = new THREE.PerspectiveCamera( 70, window.innerWidth/window.innerHeight , 1, 5000 );
+	{
+		//camera = new THREE.PerspectiveCamera( 70, window.innerWidth/window.innerHeight , 1, 5000 );
+		const width = window.innerWidth;
+		const height = window.innerHeight;
+		const divid = width/40;
+		camera = new THREE.OrthographicCamera( -width/divid, width/divid, height/divid, -height/divid, -divid, 1000 );
+		camera.position.z = 10;
+	}
 	
-	const divid = 30;
-	camera = new THREE.OrthographicCamera( -width/divid, width/divid, height/divid, -height/divid, -divid, 1000 );
-	camera.position.z = 10;
-
 	let controls = new TrackballControls( camera, renderer.domElement );
 	controls.minDistance = 10;
 	controls.maxDistance = 100;
@@ -1008,12 +996,13 @@ export function topmolviewer(filename) {
 	
 	group = new THREE.Group();
 	scene.add( group );
-	/*
-	const axesHelper = new THREE.AxesHelper( 5 );
-	axesHelper.translateX(40);
-	axesHelper.translateY(20);
-	scene.add( axesHelper );
-	*/
+	
+	
+	//const axesHelper = new THREE.AxesHelper( 10 );
+	//axesHelper.translateX(40);
+	//axesHelper.translateY(20);
+	//scene.add( axesHelper );
+	
 	
 	if (!gui) {
 		gui = new GUI({autoPlace: false} );
@@ -1031,28 +1020,12 @@ export function topmolviewer(filename) {
 		gui.open();
 	}
 	
-	
-	
 	function onWindowResize() {
-		const containerSize = getContainerSize(); 
-		const width = containerSize.width;
-		const height = containerSize.height;
-		const ratio = width/height;
-		
-		//console.log('windows container now is ',width,height);
-	
-		//const width = window.innerWidth; //containerSize.width;
-		//const height = window.innerHeight; //containerSize.height;
-	
-		//container.setAttribute("style",`width:${width}px; height:${height}px`);
-		//container.width = width;
-		//container.height = height;
-	
-		camera.aspect = ratio;
+		const rect = container.getBoundingClientRect();	
+		renderer.setSize(rect.width,rect.width*ratio);
+		//camera.aspect = 1.0/ratio;
 		camera.updateProjectionMatrix();
-	
-		renderer.setSize(width,height);
-		renderer.render(scene, camera );
+		renderer.render(scene,camera);
 	}
 
 	window.addEventListener( 'resize', onWindowResize );
