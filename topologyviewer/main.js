@@ -959,23 +959,10 @@ export function topmolviewer(filename) {
 	
 	canvas = document.getElementById('maincanvas');
 	
-	renderer = new THREE.WebGLRenderer( {
-		canvas: canvas,
-		antialias: true,
-		preserveDrawingBuffer: true
-	});
-	renderer.setClearColor(0x333333);
-	renderer.setPixelRatio( window.devicePixelRatio );
-	renderer.outputEncoding = THREE.sRGBEncoding;
-	
-	container = document.getElementById('canvascontainer');
-	container.appendChild( renderer.domElement );
-	
-	//camera = new THREE.PerspectiveCamera( 70, window.innerWidth/window.innerHeight , 1, 5000 );
-	
 	function getContainerSize() {
-		const width = (0.7*window.innerWidth).toFixed(0);
+		const width =  (0.7*window.innerWidth).toFixed(0);
 		const height = (0.7*window.innerHeight).toFixed(0);
+		console.log(width,height);
 		return { 
 			width: width,
 			height: height
@@ -986,6 +973,22 @@ export function topmolviewer(filename) {
 	const width = containerSize.width;
 	const height = containerSize.height;
 	const ratio = width/height;
+	
+	renderer = new THREE.WebGLRenderer( {
+		canvas: canvas,
+		antialias: true,
+		preserveDrawingBuffer: true
+	});
+	renderer.setClearColor(0x333333);
+	
+	renderer.setPixelRatio( ratio );
+	renderer.outputEncoding = THREE.sRGBEncoding;
+	
+	container = document.getElementById('canvascontainer');
+	container.appendChild( renderer.domElement );
+	
+	//camera = new THREE.PerspectiveCamera( 70, window.innerWidth/window.innerHeight , 1, 5000 );
+	
 	const divid = 30;
 	camera = new THREE.OrthographicCamera( -width/divid, width/divid, height/divid, -height/divid, -divid, 1000 );
 	camera.position.z = 10;
@@ -1034,6 +1037,7 @@ export function topmolviewer(filename) {
 		const containerSize = getContainerSize(); 
 		const width = containerSize.width;
 		const height = containerSize.height;
+		const ratio = width/height;
 		
 		//console.log('windows container now is ',width,height);
 	
@@ -1047,7 +1051,7 @@ export function topmolviewer(filename) {
 		camera.aspect = ratio;
 		camera.updateProjectionMatrix();
 	
-		renderer.setSize(width,width/ratio);
+		renderer.setSize(width,height);
 		renderer.render(scene, camera );
 	}
 
