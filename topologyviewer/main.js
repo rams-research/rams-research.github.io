@@ -963,21 +963,21 @@ export function topmolviewer(filename) {
 	renderer = new THREE.WebGLRenderer( {
 		canvas: canvas,
 		antialias: true,
-		preserveDrawingBuffer: true
+		preserveDrawingBuffer: true,
+		alpha: true,
 	});
 	
 	renderer.setClearColor(0x333333);
 	renderer.outputEncoding = THREE.sRGBEncoding;
+	renderer.setPixelRatio(window.devicePixelRatio);
 	container.appendChild( renderer.domElement );
-	//const rect = container.getBoundingClientRect();	
-	const ratio = 0.4;
-	
+
 	{
 		//camera = new THREE.PerspectiveCamera( 70, window.innerWidth/window.innerHeight , 1, 5000 );
-		const width = window.innerWidth;
-		const height = window.innerHeight;
-		const divid = width/40;
-		camera = new THREE.OrthographicCamera( -width/divid, width/divid, height/divid, -height/divid, -divid, 1000 );
+		const rect = container.getBoundingClientRect();
+		const width = rect.width; //window.innerWidth;
+		const height = rect.height; //window.innerHeight;
+		camera = new THREE.OrthographicCamera( -width, width, height, -height, 0.1, 2000);
 		camera.position.z = 10;
 	}
 	
@@ -997,12 +997,10 @@ export function topmolviewer(filename) {
 	group = new THREE.Group();
 	scene.add( group );
 	
-	
 	//const axesHelper = new THREE.AxesHelper( 10 );
 	//axesHelper.translateX(40);
 	//axesHelper.translateY(20);
 	//scene.add( axesHelper );
-	
 	
 	if (!gui) {
 		gui = new GUI({autoPlace: false} );
@@ -1020,11 +1018,44 @@ export function topmolviewer(filename) {
 		gui.open();
 	}
 	
+	/*
+	let targetAspectRatio = 2/1;
+	function aspectSize(availableWidth, availableHeight) {
+		let currentRatio = availableWidth / availableHeight;
+		if (currentRatio > targetAspectRatio) { //then the height is the limiting factor
+			return {
+				width: availableHeight * targetAspectRatio,
+				height: availableHeight
+			};
+		} else { // the width is the limiting factor
+			return {
+				width: availableWidth,
+				height: availableWidth / targetAspectRatio
+			};
+		}
+	}
+	*/
 	function onWindowResize() {
-		const rect = container.getBoundingClientRect();	
-		renderer.setSize(rect.width,rect.width*ratio);
-		//camera.aspect = 1.0/ratio;
+		
+		//const Width = window.innerWidth*0.7;
+		//const Height = window.innerHeight*0.7;
+		//renderer.setSize(Width,Height);
+		//camera.aspect = Width/Height;
+		//const size = aspectSize(Width,Height);
+		
+		const rect = container.getBoundingClientRect();
+		const width = rect.width;
+		const height = rect.width*0.5;
+		const divid = width*0.02;
+		camera.left   = -width/divid;
+		camera.right  =  width/divid;
+		camera.top    =  height/divid;
+		camera.bottom = -height/divid;
+		camera.near = -divid;
+		camera.aspect = width/height;
 		camera.updateProjectionMatrix();
+		
+		renderer.setSize(width,height);
 		renderer.render(scene,camera);
 	}
 
