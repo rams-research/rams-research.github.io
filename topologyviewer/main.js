@@ -1052,7 +1052,6 @@ export function topmolviewer(filename) {
 		camera.updateProjectionMatrix();
 	
 		renderer.setSize(width,height);
-		renderer.setPixelRatio( ratio );
 		renderer.render(scene, camera );
 	}
 
