@@ -22,7 +22,7 @@
 			let doi   = data[k][1];
 			let title = data[k][2];
 			let image = data[k][3];
-			html += `<tr><td class='width:150px'><img src='${image}' style='width:auto;max-width:150px;max-height:3rem;height:auto'></td><td><a href='${link}' class="w3-hover-text-green"><b>${title}</b> <font style='font-size:80%'>${doi}<font></a>`;
+			html += `<tr class='text-align:justify'><td class='width:150px'><img src='${image}' style='width:auto;max-width:150px;max-height:3rem;height:auto'></td><td><a href='${link}' class="w3-hover-text-green"><b>${title}</b> <font style='font-size:60%'>${doi}<font></a></tr>`;
 		}
 		document.getElementById(id).innerHTML = html
 	}
