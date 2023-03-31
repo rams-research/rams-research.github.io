@@ -16,16 +16,22 @@
 	</style>
 	<script>
 	function insert(data,id) {
-		let html = document.getElementById(id).innerHTML;
+		let html = ``;
 		for (let k=0; k<data.length; k++) {
 			let link  = data[k][0];
 			let doi   = data[k][1];
 			let title = data[k][2];
 			let image = data[k][3];
-			html += `<tr class='text-align:justify'><td class='width:150px'><img src='${image}' style='width:auto;max-width:150px;max-height:3rem;height:auto'></td><td><a href='${link}' class="w3-hover-text-green"><b>${title}</b> <font style='font-size:60%'>${doi}<font></a></tr>`;
-		}
+			html += `
+			<a href='${link}' class="w3-hover-text-green">
+				• <img src='${image}' style='width:100px;max-height:2.7rem;height:auto'>
+				&nbsp
+				${title}
+				<font style='font-size:60%'>${doi}</font>
+			</a><br>
+			`;
 		document.getElementById(id).innerHTML = html
-	}
+	}};
 	</script>
 </head>	
 <body>
@@ -50,6 +56,7 @@
 	<div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium">
 		<a href="#portfolio" class="w3-bar-item w3-button" onclick="toggleFunction()">RESEARCH</a>
 		<a href="#projects" class="w3-bar-item w3-button"><i class="fa fa-th"></i> PROJECTS</a>
+		<a href="topologyviewer/index.html" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-diagram-project"></i> TopMolViewer </a>
 		<a href="#about" class="w3-bar-item w3-button" onclick="toggleFunction()">ABOUT</a>
 		<a href="#contact" class="w3-bar-item w3-button" onclick="toggleFunction()">CONTACT</a>
 		<!--a href="#" class="w3-bar-item w3-button">SEARCH</a-->
@@ -103,28 +110,39 @@ In particular, the simple contact map analysis and hydrogen bonds network, commo
 	<div class="w3-dark-grey w3-center">
 		<h3>ONGOING PROJECTS AND RESULTS</h3>
 	</div>
-	<p class="w3-center"><em>Projects I'm participating and recents results!</em></p>
 	
-	<div class="w3-half w3-center w3-padding-large">
-		<b>
-		Mathematical Modelling Applied to Health<br>
-		Long-term Covid-19 Multiphase Persistent Interaction – ikur Strategia - BMTF<br>
-		</b>
-		<img src="logo-bcam-color-transparent-450-300x150.png" class="w3-image w3-round" style="height:150px;">
-		<a href="https://www.ikerbasque.net/en/news/basque-government-will-invest-additional-100-million-euros-10-years-promote-strategic-areas">
-			<img src="img/ikur_logo.png" class="w3-image w3-round" style="width:150px;">
-		</a>
-		<img src="img/curead-1.png" alt="curead-logo" class="w3-image w3-round" style="height:130px;width:auto;"><br>
+	<div class="w3-row w3-center">
+		<p><em>Projects I'm participating and recents results!</em></p>
+	
+		<div class="w3-col w3-half w3-padding-large">
+			<b>
+			Mathematical Modelling Applied to Health<br>
+			Long-term Covid-19 Multiphase Persistent Interaction – ikur Strategia - BMTF<br>
+			</b>
+			<img src="logo-bcam-color-transparent-450-300x150.png" class="w3-image w3-round" style="height:100px;">
+			<a href="https://www.ikerbasque.net/en/news/basque-government-will-invest-additional-100-million-euros-10-years-promote-strategic-areas">
+				<img src="img/ikur_logo.png" class="w3-image w3-round" style="width:100px;">
+			</a>
+			<img src="img/curead-1.png" alt="curead-logo" class="w3-image w3-round" style="height:60px;width:auto;"><br>
+		</div>
+	
+		<div class="w3-hide-small w3-padding-large" style="text-align:left">
+			<ul>
+				<li> <a href="topologyviewer/index.html" class="w3-hover-text-green"> March 2023 - TopMolViewer : Visualization of mathematical properties we're computing directly projected on the coordinates of molecules. </a> </li>
+				<li> March 2023 - Website now online on Github. </li>
+				<li> March 2023 - Beginning of this project. </li>
+			</ul>
+		</div>
 	</div>
 	
-	<div class="w3-hide-small w3-padding-large">
-		<ul>
-			<li> <a href="topologyviewer/index.html" class="w3-hover-text-green"> March 2023 - TopMolViewer : Visualization of mathematical properties we're computing directly projected on the coordinates of molecules. </a> </li>
-			<li> March 2023 - Website now online on Github. </li>
-			<li> March 2023 - Beginning of this project. </li>
-		</ul>
-	</div>
+	<div class="w3-row w3-center">
+		<p><em>We work toghether:</em></p>
+		<img src="img/logo-ippt.png" class="w3-image w3-round" style="height:80px;width:auto">
+		<a href='https://www.ippt.pan.pl/en/staff/?osoba=apoma' class='w3-hover-text-green'> Dr. Adolfo Poma @ PomaLab </a>
+	</div>	
 </div>
+
+
 
 <!-- Container (Portfolio Section) -->
 <div class="w3-container" id="portfolio">
@@ -133,6 +151,8 @@ In particular, the simple contact map analysis and hydrogen bonds network, commo
 	</div>
 	<p class="w3-center"><em>Latest research topics. Click on the figures to get the abstracts</em></p>
 	<div class="w3-container">
+	
+	
 		<div class="w3-panel w3-border w3-round-xxlarge">
 		<details>
 		<summary>
@@ -140,9 +160,7 @@ In particular, the simple contact map analysis and hydrogen bonds network, commo
 			<div class="w3-center w3-col w3-quarter w3-padding-32">
 				<img src="img/JPhys-Complexity-2019-1.png" style="height:auto; max-width:20%" class="w3-hover-opacity" alt="Sars-CoV-2">
 			</div>
-			<div class="w3-col w3-threequarter">
-			<table id='math'>
-			</table>
+			<div id="math" class="w3-col w3-threequarter"></div>
 <script>
 insert([
 [
@@ -158,7 +176,8 @@ insert([
 We use methods and concepts of applied algebraic topology to comprehensively explore the recent idea of topological phase transitions (TPTs) in complex systems. TPTs are characterized by the emergence of nontrivial homology groups as a function of a threshold parameter. Under certain conditions, one can identify TPTs via the zeros of the Euler characteristic or by singularities of the Euler entropy. This work illustrates this possibility by investigating various networks from a topological perspective. We first review the concept of TPTs in brain networks and discuss it in the context of high-order interactions in complex systems. We then investigate TPTs in protein–protein interaction networks using methods of topological data analysis for two variants of the duplication–divergence model. We compare our theoretical and computational results to experimental data freely available for gene co-expression networks of S. cerevisiae, also known as baker's yeast, as well as of the nematode C. elegans. Supporting our theoretical expectations, we can detect TPTs in both networks obtained according to different similarity measures. We then perform numerical simulations of TPTs in four classical network models: the Erdős–Rényi, the Watts–Strogatz, the random geometric, and the Barabasi–Albert models. Finally, we discuss the relevance of these insights for network science.
 		</p>
 		</details>
-		</div>
+		</div> <!-- w3-panel -->
+	
 		
 		<div class="w3-panel w3-border w3-round-xxlarge w3-row">
 		<details>
@@ -169,8 +188,7 @@ We use methods and concepts of applied algebraic topology to comprehensively exp
 				<img src="img/pointmutations.png" style="height:auto; max-width:35%" class="w3-hover-opacity" alt="Point mutations">
 			</div>
 			<div class="w3-col w3-threequarter">
-			<table id='spike'>
-			</table>
+			<div id='spike'></div>
 <script>
 insert([
 [
@@ -215,8 +233,7 @@ Among the most relevant proteins required by the novel coronavirus to facilitate
 				<img src="img/interfacestability.png" style="height:auto; max-width:50%" class="w3-hover-opacity" alt="Interface stability">
 			</div>
 			<div class="w3-col w3-threequarter">
-			<table id='interface'>
-			</table>
+			<div id='interface'></div>
 <script>
 insert([
 [
@@ -244,21 +261,20 @@ Single-molecule AFM force spectroscopy in combination with click chemistry to me
 				<img src="img/cellulose.model-1.png" style="height:auto; max-width:40%" class="w3-hover-opacity" alt="Cellulose model">
 			</div>
 			<div class="w3-col w3-threequarter">
-			<table id='coarse'>
-			</table>
+			<div id='coarse'></div>
 <script>
 insert([
 [
 'https://doi.org/10.3390/ijms23158505',
 'DOI:10.3390/ijms23158505',
 'Molecular Insight into the Self-Assembly Process of Cellulose Iβ Microfibril',
-'img/molecules_logo.png'
+'img/ijms-logo.png'
 ],
 [
 'https://doi.org/10.3390/molecules27030976',
 'DOI:10.3390/molecules27030976',
 'Martini 3 Model of Cellulose Microfibrils: On the Route to Capture Large Conformational Changes of Polysaccharides',
-''
+'img/molecules_logo.png'
 ],
 [
 'https://doi.org/10.1007/978-1-0716-1546-1_16',
@@ -287,15 +303,14 @@ High resolution data from all-atom molecular simulations is used to parameterize
 				<img src="img/images_medium_ct-2017-00930w_0006.gif" style="height:auto; max-width:80%" class="w3-hover-opacity" alt="Otherwise">
 			</div>
 			<div class="w3-col w3-threequarter">
-			<table id='oldworks'>
-			</table>
+			<div id='oldworks'></div>
 <script>
 insert([
 [
  'https://doi.org/10.1016/j.cplett.2019.04.023',
  'DOI:10.1016/j.cplett.2019.04.023',
  'Quantification of molecular orbitals based on projection operators: Methodological development and applications to basicity prediction of organic compounds in the gas phase',
-  ''
+  'img/elsevier-logo.png'
  ],
  [
  'https://doi.org/10.1021/acs.jctc.7b00930',
@@ -327,21 +342,20 @@ insert([
 	<div class="w3-col w3-third">
 		<a href="http://www.bcamath.org/es/" class="w3-hover-text-green">
 			<img src="logo-bcam-color-transparent-450-300x150.png" class="w3-image w3-round" style="width: 150px"> 
-			Basque Center for Applied Mathematics
 		</a>
 		<p>Swing by for a cup of <i class="fa fa-coffee"></i>.</p>
 	</div>
 	<div class="w3-col w3-third">
 		<a href="http://www.bcamath.org/en/research/lines/MCEN" class="w3-hover-text-green">
-		<em> MCEN - Mathematical, Computational and Experimental Neuroscience Group </em> <br>
+		<em> Mathematical, Computational and Experimental Neuroscience Group </em> <br>
 		<img src="img/mcen-logo.png" style="height:auto; max-width:30%" alt="MCEN logo"><br>
-		http://www.bcamath.org/en/research/lines/MCEN <br>
+		<!-- http://www.bcamath.org/en/research/lines/MCEN <br -->
 		</a>
 	</div>
-	<div class="w3-col w3-third">
+	<div class="w3-col w3-third" style="text-align:left">
 		<i class="fa fa-map-marker fa-fw w3-hover-text-black w3-large w3-margin-right"></i> Bilbao, Basque Country, Spain<br>
 		<i class="fa fa-phone fa-fw w3-hover-text-black w3-large w3-margin-right"></i> Phone: +34 946 56 78 42<br>
-		<i class="fa fa-envelope fa-fw w3-hover-text-black w3-large w3-margin-right"></i> http://www.bcamath.org/en/people/razevedo <br>
+		<i class="fa fa-envelope fa-fw w3-hover-text-black w3-large w3-margin-right"></i> <a href='http://www.bcamath.org/en/people/razevedo' class='w3-hover-text-green'> razevedo @ BCAM  </a> <br>
 	</div>
 	</div>
 </div>
