@@ -349,7 +349,8 @@ const filtration = {
 			}
 		}
 		*/
-		this.list.sort(function(a,b){ return a[2] - b[2]});
+		this.list.sort(function(a,b){ return a[2] > b[2]});
+		//for(let k=0;k<this.list.length;k++){console.log('list',this.list[k])}
 		
 		//this.minDistance = parseFloat(list[0][2].toFixed(2));
 		//this.maxDistance = parseFloat(list[list.length-1][2].toFixed(2));
