@@ -68,7 +68,7 @@
 	<body>
 		<div class="w3-container w3-center w3-light-grey">
 			<div class="w3-row">
-				<div id="info" class="w3-col w3-quarter"> Version: 03312023<br> <a href="../index.html"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back to main page</a> </div>
+				<div id="info" class="w3-col w3-quarter"> Version: 11042023<br> <a href="../index.html"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back to main page</a> </div>
 				<div class="w3-col w3-half">
 					TopMolViewer<br>
 					Visualization of Topogical Simplicial Complexes from Proteins <br>
@@ -86,45 +86,57 @@
 				
 				<div class="w3-col w3-leftbar w3-border-light-grey" style="height:auto;width:auto; max-width:150px">
 					<button id="screenshot" class="w3-button w3-border" type="button" onclick="saveCanvas()" style="width:100%;"> Save canvas </button>
-					<select class="w3-select w3-border" id="fileOption" style="margin: 2px 0px; padding: 11px 0px 11px 0px; ">
-						<option value="" disabled >Molecules</option>
-<option value="./data/108l.pdb.network_backbone.data"   onclick="topmolviewer()"> 108l.pdb.network_backbone.data </option>
-<option value="./data/108l.pdb.network_hbond.data"   onclick="topmolviewer()"> 108l.pdb.network_hbond.data </option>
-<option value="./data/108l.pdb.network_heavybackbone.data"   onclick="topmolviewer()"> 108l.pdb.network_heavybackbone.data </option>
-<option value="./data/108l.pdb.network_heavyhbond.data"   onclick="topmolviewer()"> 108l.pdb.network_heavyhbond.data </option>
-<option value="./data/1k1x.pdb.network_backbone.data"   onclick="topmolviewer()"> 1k1x.pdb.network_backbone.data </option>
-<option value="./data/1k1x.pdb.network_hbond.data"   onclick="topmolviewer()"> 1k1x.pdb.network_hbond.data </option>
-<option value="./data/1k1x.pdb.network_heavybackbone.data"   onclick="topmolviewer()"> 1k1x.pdb.network_heavybackbone.data </option>
-<option value="./data/1k1x.pdb.network_heavyhbond.data"   onclick="topmolviewer()"> 1k1x.pdb.network_heavyhbond.data </option>
-<option value="./data/1rbp.pdb.network_backbone.data"   onclick="topmolviewer()"> 1rbp.pdb.network_backbone.data </option>
-<option value="./data/1rbp.pdb.network_hbond.data"   onclick="topmolviewer()"> 1rbp.pdb.network_hbond.data </option>
-<option value="./data/1rbp.pdb.network_heavybackbone.data"   onclick="topmolviewer()"> 1rbp.pdb.network_heavybackbone.data </option>
-<option value="./data/1rbp.pdb.network_heavyhbond.data"   onclick="topmolviewer()"> 1rbp.pdb.network_heavyhbond.data </option>
-<option value="./data/betabarrel.pdb.network_backbone.data"   onclick="topmolviewer()"> betabarrel.pdb.network_backbone.data </option>
-<option value="./data/betabarrel.pdb.network_hbond.data"   onclick="topmolviewer()"> betabarrel.pdb.network_hbond.data </option>
-<option value="./data/betabarrel.pdb.network_heavybackbone.data"   onclick="topmolviewer()"> betabarrel.pdb.network_heavybackbone.data </option>
-<option value="./data/betabarrel.pdb.network_heavyhbond.data"   onclick="topmolviewer()"> betabarrel.pdb.network_heavyhbond.data </option>
-<option value="./data/helix310.pdb.network_backbone.data"   onclick="topmolviewer()"> helix310.pdb.network_backbone.data </option>
-<option value="./data/helix310.pdb.network_hbond.data"   onclick="topmolviewer()"> helix310.pdb.network_hbond.data </option>
-<option value="./data/helix310.pdb.network_heavybackbone.data"   onclick="topmolviewer()"> helix310.pdb.network_heavybackbone.data </option>
-<option value="./data/helix310.pdb.network_heavyhbond.data"   onclick="topmolviewer()"> helix310.pdb.network_heavyhbond.data </option>
-<option value="./data/helixAlpha310AlphaPiAalpha.pdb.network_backbone.data"   onclick="topmolviewer()"> helixAlpha310AlphaPiAalpha.pdb.network_backbone.data </option>
-<option value="./data/helixAlpha310AlphaPiAalpha.pdb.network_hbond.data"   onclick="topmolviewer()"> helixAlpha310AlphaPiAalpha.pdb.network_hbond.data </option>
-<option value="./data/helixAlpha310AlphaPiAalpha.pdb.network_heavybackbone.data"   onclick="topmolviewer()"> helixAlpha310AlphaPiAalpha.pdb.network_heavybackbone.data </option>
-<option value="./data/helixAlpha310AlphaPiAalpha.pdb.network_heavyhbond.data"   onclick="topmolviewer()"> helixAlpha310AlphaPiAalpha.pdb.network_heavyhbond.data </option>
-<option value="./data/helixalpha.pdb.network_backbone.data"   onclick="topmolviewer()"> helixalpha.pdb.network_backbone.data </option>
-<option value="./data/helixalpha.pdb.network_hbond.data"   onclick="topmolviewer()"> helixalpha.pdb.network_hbond.data </option>
-<option value="./data/helixalpha.pdb.network_heavybackbone.data"   onclick="topmolviewer()"> helixalpha.pdb.network_heavybackbone.data </option>
-<option value="./data/helixalpha.pdb.network_heavyhbond.data"   onclick="topmolviewer()"> helixalpha.pdb.network_heavyhbond.data </option>
-<option value="./data/helixpi.pdb.network_backbone.data"   onclick="topmolviewer()"> helixpi.pdb.network_backbone.data </option>
-<option value="./data/helixpi.pdb.network_hbond.data"   onclick="topmolviewer()"> helixpi.pdb.network_hbond.data </option>
-<option value="./data/helixpi.pdb.network_heavybackbone.data"   onclick="topmolviewer()"> helixpi.pdb.network_heavybackbone.data </option>
-<option value="./data/helixpi.pdb.network_heavyhbond.data"   onclick="topmolviewer()"> helixpi.pdb.network_heavyhbond.data </option>
-<option value="./data/loops.pdb.network_backbone.data"   onclick="topmolviewer()"> loops.pdb.network_backbone.data </option>
-<option value="./data/loops.pdb.network_hbond.data"   onclick="topmolviewer()"> loops.pdb.network_hbond.data </option>
-<option value="./data/loops.pdb.network_heavybackbone.data"   onclick="topmolviewer()"> loops.pdb.network_heavybackbone.data </option>
-<option value="./data/loops.pdb.network_heavyhbond.data"   onclick="topmolviewer()"> loops.pdb.network_heavyhbond.data </option>
-					 </select>
+					<form>
+					<select class="w3-select w3-border" id="fileOption" onchange="topmolviewer()" style="margin: 2px 0px; padding: 11px 0px 11px 0px;">
+					<optgroup label="Molecules available">
+<option value="./data/108l.pdb.network_backbone.data" > 108l.pdb.network_backbone.data </option>
+<option value="./data/108l.pdb.network_hbond.data" > 108l.pdb.network_hbond.data </option>
+<option value="./data/108l.pdb.network_heavybackbone.data" > 108l.pdb.network_heavybackbone.data </option>
+<option value="./data/108l.pdb.network_heavyhbond.data" > 108l.pdb.network_heavyhbond.data </option>
+<option value="./data/108l.pdb.network_heavyprotein.data" > 108l.pdb.network_heavyprotein.data </option>
+<option value="./data/1k1x.pdb.network_backbone.data" > 1k1x.pdb.network_backbone.data </option>
+<option value="./data/1k1x.pdb.network_hbond.data" > 1k1x.pdb.network_hbond.data </option>
+<option value="./data/1k1x.pdb.network_heavybackbone.data" > 1k1x.pdb.network_heavybackbone.data </option>
+<option value="./data/1k1x.pdb.network_heavyhbond.data" > 1k1x.pdb.network_heavyhbond.data </option>
+<option value="./data/1k1x.pdb.network_heavyprotein.data" > 1k1x.pdb.network_heavyprotein.data </option>
+<option value="./data/1rbp.pdb.network_backbone.data" > 1rbp.pdb.network_backbone.data </option>
+<option value="./data/1rbp.pdb.network_hbond.data" > 1rbp.pdb.network_hbond.data </option>
+<option value="./data/1rbp.pdb.network_heavybackbone.data" > 1rbp.pdb.network_heavybackbone.data </option>
+<option value="./data/1rbp.pdb.network_heavyhbond.data" > 1rbp.pdb.network_heavyhbond.data </option>
+<option value="./data/1rbp.pdb.network_heavyprotein.data" > 1rbp.pdb.network_heavyprotein.data </option>
+<option value="./data/betabarrel.pdb.network_backbone.data" > betabarrel.pdb.network_backbone.data </option>
+<option value="./data/betabarrel.pdb.network_hbond.data" > betabarrel.pdb.network_hbond.data </option>
+<option value="./data/betabarrel.pdb.network_heavybackbone.data" > betabarrel.pdb.network_heavybackbone.data </option>
+<option value="./data/betabarrel.pdb.network_heavyhbond.data" > betabarrel.pdb.network_heavyhbond.data </option>
+<option value="./data/betabarrel.pdb.network_heavyprotein.data" > betabarrel.pdb.network_heavyprotein.data </option>
+<option value="./data/helix310.pdb.network_backbone.data" > helix310.pdb.network_backbone.data </option>
+<option value="./data/helix310.pdb.network_hbond.data" > helix310.pdb.network_hbond.data </option>
+<option value="./data/helix310.pdb.network_heavybackbone.data" > helix310.pdb.network_heavybackbone.data </option>
+<option value="./data/helix310.pdb.network_heavyhbond.data" > helix310.pdb.network_heavyhbond.data </option>
+<option value="./data/helix310.pdb.network_heavyprotein.data" > helix310.pdb.network_heavyprotein.data </option>
+<option value="./data/helixAlpha310AlphaPiAalpha.pdb.network_backbone.data" > helixAlpha310AlphaPiAalpha.pdb.network_backbone.data </option>
+<option value="./data/helixAlpha310AlphaPiAalpha.pdb.network_hbond.data" > helixAlpha310AlphaPiAalpha.pdb.network_hbond.data </option>
+<option value="./data/helixAlpha310AlphaPiAalpha.pdb.network_heavybackbone.data" > helixAlpha310AlphaPiAalpha.pdb.network_heavybackbone.data </option>
+<option value="./data/helixAlpha310AlphaPiAalpha.pdb.network_heavyhbond.data" > helixAlpha310AlphaPiAalpha.pdb.network_heavyhbond.data </option>
+<option value="./data/helixAlpha310AlphaPiAalpha.pdb.network_heavyprotein.data" > helixAlpha310AlphaPiAalpha.pdb.network_heavyprotein.data </option>
+<option value="./data/helixalpha.pdb.network_backbone.data" > helixalpha.pdb.network_backbone.data </option>
+<option value="./data/helixalpha.pdb.network_hbond.data" > helixalpha.pdb.network_hbond.data </option>
+<option value="./data/helixalpha.pdb.network_heavybackbone.data" > helixalpha.pdb.network_heavybackbone.data </option>
+<option value="./data/helixalpha.pdb.network_heavyhbond.data" > helixalpha.pdb.network_heavyhbond.data </option>
+<option value="./data/helixalpha.pdb.network_heavyprotein.data" > helixalpha.pdb.network_heavyprotein.data </option>
+<option value="./data/helixpi.pdb.network_backbone.data" > helixpi.pdb.network_backbone.data </option>
+<option value="./data/helixpi.pdb.network_hbond.data" > helixpi.pdb.network_hbond.data </option>
+<option value="./data/helixpi.pdb.network_heavybackbone.data" > helixpi.pdb.network_heavybackbone.data </option>
+<option value="./data/helixpi.pdb.network_heavyhbond.data" > helixpi.pdb.network_heavyhbond.data </option>
+<option value="./data/helixpi.pdb.network_heavyprotein.data" > helixpi.pdb.network_heavyprotein.data </option>
+<option value="./data/loops.pdb.network_backbone.data" > loops.pdb.network_backbone.data </option>
+<option value="./data/loops.pdb.network_hbond.data" > loops.pdb.network_hbond.data </option>
+<option value="./data/loops.pdb.network_heavybackbone.data" > loops.pdb.network_heavybackbone.data </option>
+<option value="./data/loops.pdb.network_heavyhbond.data" > loops.pdb.network_heavyhbond.data </option>
+<option value="./data/loops.pdb.network_heavyprotein.data" > loops.pdb.network_heavyprotein.data </option>
+					</optgroup>
+					</select>
+					</form>
 					 <!-- button class="w3-button w3-border" type="button" onclick="disposeAll()" style="width:100%"> Clear/Stop </button -->
 				</div>
 				<div id="infoeuler" class="w3-col w3-leftbar w3-border-light-grey" style="height:auto;width:auto">
@@ -134,8 +146,8 @@
 				</div>
 				<div class="w3-col w3-leftbar w3-border-light-grey" style="height:120px; width:auto">
 					Highlight a color representing a curvature value: <br>
-					from <input id="mincurvature" class="w3-border w3-small w3-round" type="text" value="" style="padding: 0px 5px 0px 5px; width:20%">
-					to   <input id="maxcurvature" class="w3-border w3-small w3-round" type="text" value="" style="padding: 0px 5px 0px 5px; width:20%">
+					from <input id="mincurvature" class="w3-border w3-small w3-round" type="text" value="" style="padding: 0px 5px 0px 5px; width:60px">
+					to   <input id="maxcurvature" class="w3-border w3-small w3-round" type="text" value="" style="padding: 0px 5px 0px 5px; width:60px">
 					<div id="pickcolorbutton" class="w3-bar"> </div>
 				</div>
 				
