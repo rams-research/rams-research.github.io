@@ -71,8 +71,8 @@
 				<div id="info" class="w3-col w3-quarter"> Version: 03312023<br> <a href="../index.html"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back to main page</a> </div>
 				<div class="w3-col w3-half">
 					TopMolViewer<br>
-					Visualization of Topogical Simplicial Complexes from Proteins<br>
-					<a href="http://rams-research.github.io/index.html"> <i class="fas fa-copyright" alt="(C)"></i> Rodrigo A. Moreira 2023 </a> - 
+					Visualization of Topogical Simplicial Complexes from Proteins <br>
+					<a href="../index.html"> Dr. Rodrigo A. Moreira </a> <br>
 					<a href="http://www.bcamath.org/en/people/razevedo"> Research Fellow @ BCAM </a>
 				</div>
 				<div class="w3-col w3-quarter"> <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />This work is licensed under <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0
@@ -84,14 +84,46 @@
 			<div class="w3-row-padding">
 				<div id="guicontainer"  class="w3-col" style="width:auto"> </div>
 				
-				<div class="w3-col w3-leftbar w3-border-light-grey" style="height:auto;width:auto">
+				<div class="w3-col w3-leftbar w3-border-light-grey" style="height:auto;width:auto; max-width:150px">
 					<button id="screenshot" class="w3-button w3-border" type="button" onclick="saveCanvas()" style="width:100%;"> Save canvas </button>
 					<select class="w3-select w3-border" id="fileOption" style="margin: 2px 0px; padding: 11px 0px 11px 0px; ">
 						<option value="" disabled >Molecules</option>
-					 	<option select value="1A5R_frame413.data"   onclick="topmolviewer()">PDB 1A5R / 1</option>
-					 	<option        value="1A5R_frame99999.data" onclick="topmolviewer()" >PDB 1A5R / 2</option>
-					 	<option        value="1AKI_frame0.data" onclick="topmolviewer()" >PDB 1AKI / 1</option>
-					 	<option        value="3DWY_frame0.data" onclick="topmolviewer()" >PDB 3DWY / 1</option>
+<option value="./data/108l.pdb.network_backbone.data"   onclick="topmolviewer()"> 108l.pdb.network_backbone.data </option>
+<option value="./data/108l.pdb.network_hbond.data"   onclick="topmolviewer()"> 108l.pdb.network_hbond.data </option>
+<option value="./data/108l.pdb.network_heavybackbone.data"   onclick="topmolviewer()"> 108l.pdb.network_heavybackbone.data </option>
+<option value="./data/108l.pdb.network_heavyhbond.data"   onclick="topmolviewer()"> 108l.pdb.network_heavyhbond.data </option>
+<option value="./data/1k1x.pdb.network_backbone.data"   onclick="topmolviewer()"> 1k1x.pdb.network_backbone.data </option>
+<option value="./data/1k1x.pdb.network_hbond.data"   onclick="topmolviewer()"> 1k1x.pdb.network_hbond.data </option>
+<option value="./data/1k1x.pdb.network_heavybackbone.data"   onclick="topmolviewer()"> 1k1x.pdb.network_heavybackbone.data </option>
+<option value="./data/1k1x.pdb.network_heavyhbond.data"   onclick="topmolviewer()"> 1k1x.pdb.network_heavyhbond.data </option>
+<option value="./data/1rbp.pdb.network_backbone.data"   onclick="topmolviewer()"> 1rbp.pdb.network_backbone.data </option>
+<option value="./data/1rbp.pdb.network_hbond.data"   onclick="topmolviewer()"> 1rbp.pdb.network_hbond.data </option>
+<option value="./data/1rbp.pdb.network_heavybackbone.data"   onclick="topmolviewer()"> 1rbp.pdb.network_heavybackbone.data </option>
+<option value="./data/1rbp.pdb.network_heavyhbond.data"   onclick="topmolviewer()"> 1rbp.pdb.network_heavyhbond.data </option>
+<option value="./data/betabarrel.pdb.network_backbone.data"   onclick="topmolviewer()"> betabarrel.pdb.network_backbone.data </option>
+<option value="./data/betabarrel.pdb.network_hbond.data"   onclick="topmolviewer()"> betabarrel.pdb.network_hbond.data </option>
+<option value="./data/betabarrel.pdb.network_heavybackbone.data"   onclick="topmolviewer()"> betabarrel.pdb.network_heavybackbone.data </option>
+<option value="./data/betabarrel.pdb.network_heavyhbond.data"   onclick="topmolviewer()"> betabarrel.pdb.network_heavyhbond.data </option>
+<option value="./data/helix310.pdb.network_backbone.data"   onclick="topmolviewer()"> helix310.pdb.network_backbone.data </option>
+<option value="./data/helix310.pdb.network_hbond.data"   onclick="topmolviewer()"> helix310.pdb.network_hbond.data </option>
+<option value="./data/helix310.pdb.network_heavybackbone.data"   onclick="topmolviewer()"> helix310.pdb.network_heavybackbone.data </option>
+<option value="./data/helix310.pdb.network_heavyhbond.data"   onclick="topmolviewer()"> helix310.pdb.network_heavyhbond.data </option>
+<option value="./data/helixAlpha310AlphaPiAalpha.pdb.network_backbone.data"   onclick="topmolviewer()"> helixAlpha310AlphaPiAalpha.pdb.network_backbone.data </option>
+<option value="./data/helixAlpha310AlphaPiAalpha.pdb.network_hbond.data"   onclick="topmolviewer()"> helixAlpha310AlphaPiAalpha.pdb.network_hbond.data </option>
+<option value="./data/helixAlpha310AlphaPiAalpha.pdb.network_heavybackbone.data"   onclick="topmolviewer()"> helixAlpha310AlphaPiAalpha.pdb.network_heavybackbone.data </option>
+<option value="./data/helixAlpha310AlphaPiAalpha.pdb.network_heavyhbond.data"   onclick="topmolviewer()"> helixAlpha310AlphaPiAalpha.pdb.network_heavyhbond.data </option>
+<option value="./data/helixalpha.pdb.network_backbone.data"   onclick="topmolviewer()"> helixalpha.pdb.network_backbone.data </option>
+<option value="./data/helixalpha.pdb.network_hbond.data"   onclick="topmolviewer()"> helixalpha.pdb.network_hbond.data </option>
+<option value="./data/helixalpha.pdb.network_heavybackbone.data"   onclick="topmolviewer()"> helixalpha.pdb.network_heavybackbone.data </option>
+<option value="./data/helixalpha.pdb.network_heavyhbond.data"   onclick="topmolviewer()"> helixalpha.pdb.network_heavyhbond.data </option>
+<option value="./data/helixpi.pdb.network_backbone.data"   onclick="topmolviewer()"> helixpi.pdb.network_backbone.data </option>
+<option value="./data/helixpi.pdb.network_hbond.data"   onclick="topmolviewer()"> helixpi.pdb.network_hbond.data </option>
+<option value="./data/helixpi.pdb.network_heavybackbone.data"   onclick="topmolviewer()"> helixpi.pdb.network_heavybackbone.data </option>
+<option value="./data/helixpi.pdb.network_heavyhbond.data"   onclick="topmolviewer()"> helixpi.pdb.network_heavyhbond.data </option>
+<option value="./data/loops.pdb.network_backbone.data"   onclick="topmolviewer()"> loops.pdb.network_backbone.data </option>
+<option value="./data/loops.pdb.network_hbond.data"   onclick="topmolviewer()"> loops.pdb.network_hbond.data </option>
+<option value="./data/loops.pdb.network_heavybackbone.data"   onclick="topmolviewer()"> loops.pdb.network_heavybackbone.data </option>
+<option value="./data/loops.pdb.network_heavyhbond.data"   onclick="topmolviewer()"> loops.pdb.network_heavyhbond.data </option>
 					 </select>
 					 <!-- button class="w3-button w3-border" type="button" onclick="disposeAll()" style="width:100%"> Clear/Stop </button -->
 				</div>
@@ -100,19 +132,22 @@
 					Euler Characteristics: <br>
 					Average Euler Characteristic: 
 				</div>
-				<div class="w3-col w3-leftbar w3-border-light-grey" style="height:120px;width:auto">
-					Highlight a color representing a curvature value <br> or a residue type: <br>
+				<div class="w3-col w3-leftbar w3-border-light-grey" style="height:120px; width:auto">
+					Highlight a color representing a curvature value: <br>
+					from <input id="mincurvature" class="w3-border w3-small w3-round" type="text" value="" style="padding: 0px 5px 0px 5px; width:20%">
+					to   <input id="maxcurvature" class="w3-border w3-small w3-round" type="text" value="" style="padding: 0px 5px 0px 5px; width:20%">
 					<div id="pickcolorbutton" class="w3-bar"> </div>
 				</div>
-				<div id="pickaabutton" class="w3-col w3-bar w3-leftbar w3-border-light-grey" style="height:auto;width:auto"></div>
+				
+				<div id="pickaabutton" class="w3-col w3-leftbar w3-border-light-grey" style="height:auto;width:auto"></div>
 				<!--div id="infotubeintersection" class="w3-col l2 w3-leftbar w3-border-light-grey" style="margin:10px; padding: 10px; height:90px"></div-->
 				
-				<div id="canvascontainer" class="w3-col" style="width:70%;">
+				<div id="canvascontainer" class="w3-col w3-bar w3-leftbar w3-border-light-grey" style="width:65%;">
 					<canvas id="maincanvas"></canvas>
 				</div>
 				
-				<div id="infomouse"   class="w3-col w3-leftbar w3-border-light-grey" sytle="width:auto"></div>
-				<div id="inforesidue" class="w3-col w3-leftbar w3-border-light-grey" sytle="width:auto"></div> <!-- style="height:120px;" -->
+				<div id="infomouse"   class="w3-col w3-bar w3-leftbar w3-border-light-grey" sytle="width:auto"></div>
+				<div id="inforesidue" class="w3-col w3-bar w3-leftbar w3-border-light-grey" sytle="width:auto"></div> <!-- style="height:120px;" -->
 			</div>
 		</div>
 
@@ -138,6 +173,7 @@
 	<!-- Footer -->
 	<footer class="w3-center w3-black w3-padding-8 w3-opacity ">
 	    <!-- Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-text-grey">w3.css</a> -->
+	    <i class="fas fa-copyright" alt="(C)"></i> <a href="http://rams-research.github.io/index.html"> Rodrigo A. Moreira </a> 2023 <br>
 	</footer>
 
 	</body>

@@ -6,6 +6,12 @@ import { GUI } from './js/lil-gui.module.min.js'
 
 let canvas, container, renderer, scene, camera, group, gui, ratio;
 
+function colorFont(color,str) { return `<h8 style="color:${color};"> ${str} </h8>`}
+
+function fFixed(float,n) { return parseFloat(parseFloat(float).toFixed(n)) }
+function distanceFixed(float) { return fFixed(float,1) }
+function curvatureFixed(float) { return fFixed(float,2) }
+
 let particle = {
 	data: {
 		particles: {
@@ -27,6 +33,9 @@ let particle = {
 	resname: function(i) { return this.data.residues.name[this.data.particles.resid[i]] },
 	curvature: function(i,cutoff) {
 		const curvature = this.data.residues.curvature;
+		//if (typeof curvature != 'number') {
+		//console.log('DEBUG point=',i,'cutoff=', cutoff,'curvature=',curvature);
+		//}
 		const resid = this.data.particles.resid[i];
 		const r1 = curvature[resid];
 		const r2 = r1[cutoff];
@@ -60,35 +69,47 @@ let particle = {
 	}
 }
 
-function colorFont(color,str) { return `<h8 style="color:${color};"> ${str} </h8>`}
-
-function pickColor(c) {
-	let str = "";
-        if      (c < -5.5) { str = "#D3D3D3" }
-        //if (c < -5.5) { str = '#40E0D0' } // turquise
-	else if (c < -4.5) { str = '#BF5B17' } // orange
-	else if (c < -3.5) { str = '#F0027F' } // pink
-        else if (c < -2.5) { str = '#003bd1' } // Bilbao blue
-        else if (c < -1.5) { str = '#32CD32' } // lime
-        else if (c < -0.5) { str = '#ffdf38' } // light gold
-        else if (c <  0.5) { str = '#FFD707' } // gold
-        else if (c <  1.5) { str = '#e5c106' } // dark gold
-        else if (c <  2.5) { str = '#000000' }
-        //else if (c <  3.5) { str = '#000000' } 
-        //else if (c <  4.5) { str = '#000000' }
-        //else if (c <  5.5) { str = '#000000' }
-        else              { str = '#D3D3D3'; }
-	const r = parseInt(str.slice(1,3),16)/255;
-	const g = parseInt(str.slice(3,5),16)/255;
-	const b = parseInt(str.slice(5,7),16)/255;
-	return [r,g,b,str]
-}
-
-const animation = { 
-	speedx: 0.0,
-	speedy: 0.0,
-	speedz: 0.0,
-	filtration: 0.0,
+const palette = {
+	default: 'bilbao',
+	numColor: function(){ return this[this.default].length },
+	jet:    ['#000000','#000080','#0000ff','#0080ff','#00ffff','#80ff80','#ffff00','#ff8000','#ff0000','#000000'], // jet.pal + black
+	pour:   ['#B35806','#E08214','#FDB863','#FEE0B6','#D8DAEB','#B2ABD2','#8073AC','#542788'], // pour.pal
+	dark2:  ['#1B9E77','#D95F02','#7570B3','#E7298A','#66A61E','#E6AB02','#A6761D','#666666','#800000','#000000'], // black + dark2.al
+	paired: ['#000000','#003bd1','#1F78B4','#B2DF8A','#33A02C','#FB9A99','#E31A1C','#FDBF6F','#FF7F00','#000000'], //paired.pal
+	bilbao: [
+		'#BF5B17', // orange
+		'#F0027F', // pink
+		'#003bd1', // Bilbao blue
+		'#32CD32', // lime
+		//'#ffdf38', // light gold
+		//'#000000', // black
+		'#ffa500', // orange
+		'#800080', // purple
+		],
+	pickColor: function (c) {
+		const def = this[this.default];
+		const numColor = this.numColor();
+		
+		const num = numColor - 1;
+		
+		const min = parseFloat(document.getElementById("mincurvature").value);
+		const max = parseFloat(document.getElementById("maxcurvature").value);
+		
+		const bin = (max - min)/num;
+		let d = Math.floor((c-min)/bin + 0.5);
+		
+		d = d < 0 ? 0 : d;
+		d = d > num ? num : d;
+		
+		const str = def[d];
+		if (! str) {console.log('STR PROBLEM AT d=',d,'C=',c,'numColor=',numColor,'max=',max,'min=',min)}
+		
+		const r = parseInt(str.slice(1,3),16)/255;
+		const g = parseInt(str.slice(3,5),16)/255;
+		const b = parseInt(str.slice(5,7),16)/255;
+		
+		return [r,g,b,str]
+	}
 }
 
 async function parsedata(filename) {
@@ -96,14 +117,22 @@ async function parsedata(filename) {
 		let response = await fetch(filename);
 		let text = await response.text();
 		let rescount = 0;
+		let atmcount = 0;
 		let state = false;
 		const lines = text.split( '\n' );
 		const particles = particle.data.particles;
 		const residue = particle.data.residues;
+		
+		let minCurvature = false;
+		let maxCurvature = false;
+		let minDistance = false;
+		let maxDistance = false;
+		
 		for ( let i = 0, l = lines.length; i < l; i ++ ) {
 			let line = lines[i]
-			if      (line == 'ATOMS')    { state = 'ATOMS';   }
+			if      (line == 'ATOMS')    { state = 'ATOMS';  atmcount = 0; }
 			else if (line == 'RESIDUES') { state = 'RESIDUES'; rescount = 0;}
+			else if (line == 'EDGES') { state = 'EDGES';}
 			else if (state == 'ATOMS')   {
 				if (line == '') { rescount++; }
 				else {
@@ -120,14 +149,30 @@ async function parsedata(filename) {
 					particles.resid.push(rescount);
 				}
 			}
+			else if (state == 'EDGES') {
+				const split = line.split(' ');
+				if (split.length == 3){
+					const i = parseInt(split[0])-1;
+					const j = parseInt(split[1])-1;
+					const d = parseFloat(split[2]);
+					//console.log('debug',i,j,d);
+					filtration.list.push([i,j,d]);
+				}
+			}
 			else if (state == 'RESIDUES') {
 				if (line == '') { rescount++; }
 				else if (line.substring(0,1) == ' ') { /* data */
 					const split = line.split(' ');
-					const cutoff = parseFloat(split[1]).toFixed(2);
-					//console.log('cutoff',cutoff);
+					
+					const cutoff = parseFloat(split[1]);
 					const curv = parseFloat(split[2]);
 					residue.curvature[rescount][cutoff] = curv;
+					
+					minDistance = Math.min(cutoff,minDistance || cutoff);
+					maxDistance = Math.max(cutoff,maxDistance || cutoff);
+					
+					maxCurvature = Math.max(curv,maxCurvature || curv);
+					minCurvature = Math.min(curv,minCurvature || curv);
 				} else {
 					const split = line.split(' ');
 					const resname = split[0];
@@ -136,13 +181,27 @@ async function parsedata(filename) {
 					residue.count += 1;
 					residue.name.push(resname);
 					residue.sequence.push(parseInt(resseq));
-					residue.curvature.push({});
+					residue.curvature.push(new Proxy({},{
+						get: function (obj, cutoff) { return obj[distanceFixed(cutoff)] },
+						set: function (obj, cutoff, curvature) { obj[distanceFixed(cutoff)] = curvature; return true }
+					}));
 				}
 			}
 		}
-		//for (let k=0; k<residue.count; k++) {
-		//	console.log(residue.name[k],residue.sequence[k],residue.curvature[k]);
-		//}
+		
+		console.log('minCurvature',minDistance, minCurvature);
+		console.log('maxCurvature',maxDistance, maxCurvature);
+		console.log('particles.count',particles.count);
+		
+		filtration.maxCurvature = maxCurvature;
+		filtration.minCurvature = minCurvature;
+		filtration.minDistance = minDistance;
+		filtration.maxDistance = maxDistance;
+		filtration.cutoff = (maxDistance - minDistance)/2;
+		
+		document.getElementById("mincurvature").value = minCurvature;
+		document.getElementById("maxcurvature").value = maxCurvature;
+		
 		return 'ok'
 	} catch (e) {
 		document.getElementById("info").innerHTML =  "<p><b>Sorry, an error occurred reading files :<br>" + e + "</b></p>";
@@ -150,47 +209,95 @@ async function parsedata(filename) {
 	}
 }
 
-const pickColorButtons = {
-	isInserted: false,
+const curvatureButtons = {
+	elements: {count: 0},
+	setColor: function(element,color) {
+		if (this.elements[color]) {
+			element.style["background-color"] = 'white';
+			element.style["color"] = 'black';
+			this.elements[color] = false;
+			this.elements.count -= 1;
+		} else {
+			element.style["background-color"] = color;
+			element.style["color"] = 'white';
+			this.elements[color] = true;
+			this.elements.count += 1;
+		}
+		filtration.update();
+	},
 	insert: function() {
-		if (this.isInserted) {return}
-		this.isInserted = true;
+		function pad(pad, num, padLeft) {
+			let str = num.toFixed(2);
+			if (num >= 0.0) str = '+'+str;
+			if (typeof str === 'undefined') return pad;
+			if (padLeft) {return (pad + str).slice(-pad.length);
+			} else {return (str + pad).substring(0, pad.length);}
+		}
 		function f(color,val) {
 			const str = `<button
 					onclick="setColorButton(this,'${color}')"
 					class="w3-button w3-small w3-round" 
 					type="button"
-					style="padding: 0px 15px 0px 15px; border: 1px solid ${color}; margin: 0px 2px; background-color: white"
+					style="padding: 0px 15px 0px 15px; border: 1px solid ${color}; margin: 0px 2px; background-color: white; font-family: monospace"
 				      >
 				      <!--font color='${color}'> ${val} </font-->
 				      ${val}
 				      </button>`;
 			return str
 		}
+		let str = '';
+		let count = 0;
+		
+		const min = parseFloat(document.getElementById("mincurvature").value);
+		const max = parseFloat(document.getElementById("maxcurvature").value);
+		//console.log('DEBUG html id',max,min);
+		
+		//const max = filtration.maxCurvature;
+		//const min = filtration.minCurvature;
+		const bin = Math.abs(max-min)/palette.numColor();
+		for (let c = (min+bin/2); c < max; c += bin) {
+			const curv = curvatureFixed(c);
+			count += 1;
+			const rgb = palette.pickColor(curv);
+			str += f(rgb[3], pad('00000',curv));
+			if (count == 4) { str+="<br>"; count = 0}
+		}
+		document.getElementById("pickcolorbutton").innerHTML = str;
+		//console.log(str,max,min,bin,palette.numColor());
+		for (const prop in this.elements) { if (prop != 'count') { this.elements[prop] = false; } }
+		this.elements.count = 0;
+		
+		filtration.update();
+	}
+}
+
+const aminoacidButtons = {
+	elements: {count: 0},
+	setColor: function(element,aa) {
+		if (this.elements[aa]) {
+			element.style["background-color"] = 'white';
+			this.elements[aa] = false;
+			this.elements.count -= 1;
+		} else {
+			element.style["background-color"] = 'gray';
+			this.elements[aa] = true;
+			this.elements.count += 1;
+		}
+		filtration.update();
+	},
+	insert: function() {
 		function g(aa) {
 			const str = `<button
 					onclick="setAAColorButton(this,'${aa}')" 
 					class="w3-button w3-small w3-round" 
 					type="button" 
-					style="padding: 0px 15px 0px 15px; border: 1px solid black; margin: 0px 2px; background-color: white"
+					style="padding: 0px 15px 0px 15px; border: 1px solid black; margin: 0px 2px; background-color: white; font-family: monospace"
 				      >
 				      ${colorFont('black',aa)}
 				      </button>`;
 			return str
 		}
-		// cutoffs
-		let row1 = f('#D3D3D3','< -5.5');
-		let count = 1;
-		for (let k=-5.0; k<=2.0; k+=1.0) {
-			count += 1;
-			row1 += f(pickColor(k)[3],k.toFixed(1));
-			if (count == 5) { row1+="<br>"; count = 0}
-		}
-		row1 += f('#D3D3D3','> 2.5');
-		document.getElementById("pickcolorbutton").innerHTML = row1;
-		
-		let row = ''
-		// residues
+		let row = '';
 		row += g('ARG'); row += g('HIS'); row += g('LYS');
 		row += g('ASP'); row += g('GLU');
 		row += '<br>'
@@ -201,35 +308,84 @@ const pickColorButtons = {
 		row += g('ALA'); row += g('ILE'); row += g('LEU'); row += g('MET'); row += g('PHE'); row += g('TRP'); row += g('TYR'); row += g('VAL');
 		document.getElementById("pickaabutton").innerHTML = row;
 		
+		for (const prop in this.elements) { if (prop != 'count') { this.elements[prop] = false; } }
+		this.elements.count = 0;
+	}
+}
+
+const filtration = {
+	updateEdgesColors: true,
+	updateTubeColors: true,
+	cutoff: 1.6,
+	minCurvature: 0.0,
+	maxCurvature:  0.0,
+	minDistance: 0.0,
+	maxDistance: 0.0,
+	list: [],
+	update: function() {
+		points.colors();
+		
+		edges.colors(this.updateEdgesColors);
+		edges.update();
+		
+		tube.colors(this.updateTubeColors);
+		
+		points.updateinfoeuler();
 	},
-	ColorElements: {count: 0},
-	setColor: function(element,color) {
-		if (this.ColorElements[color]) {
-			element.style["background-color"] = 'white';
-			element.style["color"] = 'black';
-			this.ColorElements[color] = false;
-			this.ColorElements.count -= 1;
-		} else {
-			element.style["background-color"] = color;
-			element.style["color"] = 'white';
-			this.ColorElements[color] = true;
-			this.ColorElements.count += 1;
+	init: function() {
+		console.log('Filtration init...');
+		const list = this.list;
+		/*
+		const coordinates = particle.data.particles.coordinates;
+		
+		for ( let i = 0; i < particle.count(); i ++ ) {
+			let a = new THREE.Vector3(coordinates[ i*3 + 0],coordinates[ i*3 + 1],coordinates[ i*3 + 2 ]);
+			for ( let j = i + 1; j < particle.count(); j ++ ) {
+				let b = new THREE.Vector3(coordinates[ j*3 + 0], coordinates[ j*3 + 1], coordinates[ j*3 + 2]) ;
+				let dist = a.distanceTo(b);		
+				if ( dist < maxDistance ) { 
+					this.list.push([i,j,dist]);
+				}
+			}
 		}
-		filtration.update();
+		*/
+		this.list.sort(function(a,b){ return a[2] - b[2]});
+		
+		//this.minDistance = parseFloat(list[0][2].toFixed(2));
+		//this.maxDistance = parseFloat(list[list.length-1][2].toFixed(2));
+		
+		console.log( 'This molecule has a maximum of ' + list.length + ' edges ');
 	},
-	AAElements: {count: 0},
-	setAA: function(element,aa) {
-		if (this.AAElements[aa]) {
-			element.style["background-color"] = 'white';
-			this.AAElements[aa] = false;
-			this.AAElements.count -= 1;
-		} else {
-			element.style["background-color"] = 'gray';
-			this.AAElements[aa] = true;
-			this.AAElements.count += 1;
+	gui: function() {
+		console.log('Filtration GUI...');
+		const folder = gui.addFolder('Filtration');
+		
+		//function onDistanceUpdate() {
+			//console.log(filtration.folderCutoff);
+			//this.max(this.object.maxDistance);
+			//this.min(this.object.minDistance);
+		//}
+		
+		function onCutoffUpdate() {
+			this.max(filtration.maxDistance);
+			this.min(filtration.minDistance);
+			filtration.update();
 		}
-		filtration.update();
+		
+		folder.add( filtration, 'minDistance', this.minDistance).listen().disable();
+		folder.add( filtration, 'maxDistance', this.maxDistance).listen().disable();
+		
+		folder.add( filtration, 'minCurvature', this.minCurvature).listen().disable();
+		folder.add( filtration, 'maxCurvature', this.maxCurvature).listen().disable();
+		folder.add( filtration, 'cutoff', this.minDistance, this.maxDistance, 0.1 ).listen().onChange( onCutoffUpdate );
+		//console.log(filtration.folderCutoff);
+		
+		//folder.add( filtration, 'updateEdgesColors', true ).onChange( onUpdate );
+		//folder.add( filtration, 'updateTubeColors', true ).onChange( onUpdate );
 	},
+	dispose: function() {
+		filtration.list.length = 0;
+	}
 }
 
 const tube = {
@@ -254,8 +410,8 @@ const tube = {
 		const translate = points.geometry.getAttribute('translate');
 		for(let k=0; k<translate.count; k++) {
 			const name = particle.name(k);
-			//if (name == 'CA' || name == 'C' || name == 'N') {
-			if (name == 'CA') {
+			if (name == 'CA' || name == 'C' || name == 'N') {
+			//if (name == 'N') {
 				const x = translate.array[3*k + 0];
 				const y = translate.array[3*k + 1];
 				const z = translate.array[3*k + 2];
@@ -448,9 +604,9 @@ const tube = {
 				const curv = particle.curvature(b,cutoff);
 				const resname = particle.resname(b);
 				const name = particle.name(b);
-				const rgbstr = pickColor(curv);
+				const rgbstr = palette.pickColor(curv);
 				
-				str += `| Filtration cutoff: ${filtration.cutoff.toFixed(2)}
+				str += `| Filtration cutoff: ${distanceFixed(filtration.cutoff)}
 					Id: ${resname} ${resseq} ${name}
 					Curvature: ${curv.toFixed(2)} | ${b}`;
 				
@@ -720,7 +876,7 @@ const points = {
 		
 			geometry.setAttribute('position', new THREE.BufferAttribute( position, 3 ) );
 			geometry.computeBoundingBox();
-			console.log('Bounding box',geometry.boundingBox);
+			//console.log('Bounding box',geometry.boundingBox);
 			geometry.center();
 
 			console.log( 'This molecule has ' + position.length + ' positions' );
@@ -783,14 +939,14 @@ const points = {
 		let sumResseq = 0.0;
 		
 		for (let i=0; i<count; i++){
-			const curv = particle.curvature(i,filtration.cutoff.toFixed(2));
-			let rgb = pickColor(curv);
+			const curv = particle.curvature(i,filtration.cutoff);
+			let rgb = palette.pickColor(curv);
 			const resseq = particle.resseq(i);
 			//console.log(i,count,resseq,rgb,curv);
 			if (
-			     (pickColorButtons.ColorElements.count > 0 && !pickColorButtons.ColorElements[rgb[3]]) 
+			     (curvatureButtons.elements.count > 0 && !curvatureButtons.elements[rgb[3]]) 
 			     ||
-			     (pickColorButtons.AAElements.count > 0 && !pickColorButtons.AAElements[particle.resname(i)])
+			     (aminoacidButtons.elements.count > 0 && !aminoacidButtons.elements[particle.resname(i)])
 			   ) {
 				const rgb1 = new THREE.Color(rgb[0],rgb[1],rgb[2]);
 				const rgb2 = rgb1.lerp(white,0.95);
@@ -806,12 +962,12 @@ const points = {
 			array[i*size+1] = rgb[1];
 			array[i*size+2] = rgb[2];
 		}
-		this.avgColorsCurv = countResseq > 0 ? sumResseq/countResseq : false
+		this.avgColorsCurv = countResseq > 0 ? sumResseq/countResseq : false;
 		this.geometry.attributes.particlesColors.needsUpdate = true;
 	},
 	updateinfoeuler: function() {
 		const count = particle.count();
-		const cutoff = filtration.cutoff.toFixed(2);
+		const cutoff = filtration.cutoff;
 		let sum = 0.0;
 		let sumResseq = 0.0;
 		let countResseq = 0;
@@ -832,19 +988,19 @@ const points = {
 		}
 		function getColorCurv() {
 			const curv = points.avgColorsCurv;
-			const color = pickColor(curv)[3];
+			const color = palette.pickColor(curv)[3];
 			if (curv != false) {
-				return boxedStr(color,`Average selected residues/curvature: ${curv.toFixed(2)}`);
+				return boxedStr(color,`Average selected: ${curvatureFixed(curv)}`);
 			 }
 			 return ''
 		}
 		const avg = sumResseq/countResseq;
-		const rgbstr = pickColor(avg);
+		const rgbstr = palette.pickColor(avg);
 		const color = rgbstr[3];
 		document.getElementById("infoeuler").innerHTML = `
-			Filtration cutoff: ${cutoff} <br>
-			Euler Characteristics: ${sum.toFixed(2)} <br>` 
-			+ boxedStr(color,`Average curvature per residue: ${avg.toFixed(2)} <br>`)
+			Filtration cutoff: ${distanceFixed(cutoff)} <br>
+			Euler Characteristics: ${curvatureFixed(sum)} <br>` 
+			+ boxedStr(color,`Average curvature per residue: ${curvatureFixed(avg)} <br>`)
 			+ getColorCurv()
 	},
 	gui: function() {
@@ -870,237 +1026,183 @@ const points = {
 	}
 }
 
-const filtration = {
-	updateEdgesColors: true,
-	updateTubeColors: true,
-	cutoff: 1.64,
-	minDistance: 0.1,
-	maxDistance: 5.2,
-	list: [],
-	update: function() {
-		points.colors();
-		
-		edges.colors(this.updateEdgesColors);
-		edges.update();
-		
-		tube.colors(this.updateTubeColors);
-		
-		points.updateinfoeuler();
-	},
-	init: function() {
-		console.log('Filtration init...');
-		const list = this.list;
-		const coordinates = particle.data.particles.coordinates;
-		
-		for ( let i = 0; i < particle.count(); i ++ ) {
-			let a = new THREE.Vector3(coordinates[ i*3 + 0],coordinates[ i*3 + 1],coordinates[ i*3 + 2 ]);
-			for ( let j = i + 1; j < particle.count(); j ++ ) {
-				let b = new THREE.Vector3(coordinates[ j*3 + 0], coordinates[ j*3 + 1], coordinates[ j*3 + 2]) ;
-				let dist = a.distanceTo(b);		
-				if ( dist < this.maxDistance ) { 
-					this.list.push([i,j,dist]);
-				}
-			}
-		}
-		
-		list.sort(function(a,b){ return a[2] - b[2]});
-		
-		this.minDistance = parseFloat(list[0][2].toFixed(2));
-		this.maxDistance = parseFloat(list[list.length-1][2].toFixed(2));
-		
-		console.log( 'This molecule has a maximum of ' + list.length + ' edges ');
-	},
+const animation = {
+	speedx: 0.0,
+	speedy: 0.0,
+	speedz: 0.0,
+	filtration: 0.0,
 	gui: function() {
-		console.log('Filtration GUI...');
-		const folder = gui.addFolder( 'Filtration' );
-		function onUpdate() { filtration.update() };
-		folder.add( filtration, 'cutoff', this.minDistance, this.maxDistance, 0.01 ).listen().onChange( onUpdate );
-		folder.add( filtration, 'updateEdgesColors', true ).onChange( onUpdate );
-		folder.add( filtration, 'updateTubeColors', true ).onChange( onUpdate );
-	},
-	dispose: function() {
-		filtration.list.length = 0;
-	}
-}
-
-// EXPORTED FUNCTIONS
-
-let animationFrame = true;
-
-export function setColorButton(element,color) { pickColorButtons.setColor(element,color); }
-export function setAAColorButton(element,aa) { pickColorButtons.setAA(element,aa); }
-
-export function stopAndClear() { animationFrame = false; }
-
-function disposeAll() {
-	tube.dispose();
-	edges.dispose();
-	points.dispose();
-	filtration.dispose();
-	particle.dispose();
-			
-	group = false;
-	camera = false;
-	scene = false;
-	container = false;
-	renderer = false;
-	
-	//let c = document.getElementById("maincanvas");
-	//let ctx = c.getContext("2d");
-	//ctx.fillStyle = "white";
-	//ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
-
-export function topmolviewer(filename) {
-	try {
-	disposeAll();
-	
-	pickColorButtons.insert();
-	
-	container = document.getElementById('canvascontainer');
-	canvas = document.getElementById('maincanvas');
-	
-	renderer = new THREE.WebGLRenderer( {
-		canvas: canvas,
-		antialias: true,
-		preserveDrawingBuffer: true,
-		alpha: true,
-	});
-	
-	renderer.setClearColor(0x333333);
-	renderer.outputEncoding = THREE.sRGBEncoding;
-	renderer.setPixelRatio(window.devicePixelRatio);
-	container.appendChild( renderer.domElement );
-
-	{
-		//camera = new THREE.PerspectiveCamera( 70, window.innerWidth/window.innerHeight , 1, 5000 );
-		const rect = container.getBoundingClientRect();
-		const width = rect.width; //window.innerWidth;
-		const height = rect.height; //window.innerHeight;
-		camera = new THREE.OrthographicCamera( -width, width, height, -height, 0.1, 2000);
-		camera.position.z = 10;
-	}
-	
-	let controls = new TrackballControls( camera, renderer.domElement );
-	controls.minDistance = 10;
-	controls.maxDistance = 100;
-	controls.panSpeed = 10.0;
-	
-	scene = new THREE.Scene();
-	scene.background = new THREE.Color( 0xFFFFFF ); //#d3d3d3
-	
-	scene.add( camera );
-	
-	const light = new THREE.AmbientLight( 0xFFFFFF ); // 0x404040 soft white light
-	scene.add( light );
-	
-	group = new THREE.Group();
-	scene.add( group );
-	
-	//const axesHelper = new THREE.AxesHelper( 10 );
-	//axesHelper.translateX(40);
-	//axesHelper.translateY(20);
-	//scene.add( axesHelper );
-	
-	if (!gui) {
-		gui = new GUI({autoPlace: false} );
 		console.log('Animation GUI...');
 		const folder = gui.addFolder( 'Animation' );
 		folder.add( animation, 'speedx', 0.0, 0.01, 0.001);
 		folder.add( animation, 'speedy', 0.0, 0.01, 0.001);
 		folder.add( animation, 'speedz', 0.0, 0.01, 0.001);
-		folder.add( animation, 'filtration', 0.0, 0.05, 0.001);
+		folder.add( animation, 'filtration', 0.0, 0.1, 0.01);
 		document.getElementById('guicontainer').appendChild(gui.domElement);
-		filtration.gui();
-		edges.gui();
-		points.gui();
-		tube.gui();
-		gui.open();
 	}
+}
+
+// INIT
+
+let animationFrame = true;
+
+container = document.getElementById('canvascontainer');
+canvas = document.getElementById('maincanvas');
 	
-	/*
-	let targetAspectRatio = 2/1;
-	function aspectSize(availableWidth, availableHeight) {
-		let currentRatio = availableWidth / availableHeight;
-		if (currentRatio > targetAspectRatio) { //then the height is the limiting factor
-			return {
-				width: availableHeight * targetAspectRatio,
-				height: availableHeight
-			};
-		} else { // the width is the limiting factor
-			return {
-				width: availableWidth,
-				height: availableWidth / targetAspectRatio
-			};
-		}
-	}
-	*/
-	function onWindowResize() {
-		
-		//const Width = window.innerWidth*0.7;
-		//const Height = window.innerHeight*0.7;
-		//renderer.setSize(Width,Height);
-		//camera.aspect = Width/Height;
-		//const size = aspectSize(Width,Height);
-		
-		const rect = container.getBoundingClientRect();
-		const width = rect.width;
-		const height = rect.width*0.5;
-		const divid = width*0.02;
-		camera.left   = -width/divid;
-		camera.right  =  width/divid;
-		camera.top    =  height/divid;
-		camera.bottom = -height/divid;
-		camera.near = -divid;
-		camera.aspect = width/height;
-		camera.updateProjectionMatrix();
-		
-		renderer.setSize(width,height);
-		renderer.render(scene,camera);
-	}
+renderer = new THREE.WebGLRenderer( {
+	canvas: canvas,
+	antialias: true,
+	preserveDrawingBuffer: true,
+	alpha: true,
+});
+	
+renderer.setClearColor(0x333333);
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.setPixelRatio(window.devicePixelRatio);
+container.appendChild( renderer.domElement );
 
-	window.addEventListener( 'resize', onWindowResize );
-	onWindowResize();
+//camera = new THREE.PerspectiveCamera( 70, window.innerWidth/window.innerHeight , 1, 5000 );
+const rect = container.getBoundingClientRect();
+const width = rect.width; //window.innerWidth;
+const height = rect.height; //window.innerHeight;
+camera = new THREE.OrthographicCamera( -width, width, height, -height, 0.1, 2000);
+camera.position.z = 10;
+	
+let controls = new TrackballControls( camera, renderer.domElement );
+controls.minDistance = 10;
+controls.maxDistance = 100;
+controls.panSpeed = 10.0;
 
-	let time = Date.now();
-	function animate() {
-		if (animationFrame == false) {
-			console.log('Stopping animation frame!');
-			disposeAll();
+scene = new THREE.Scene();
+scene.background = new THREE.Color( 0xFFFFFF ); //#d3d3d3
+scene.add( camera );
+
+const light = new THREE.AmbientLight( 0xFFFFFF ); // 0x404040 soft white light
+scene.add( light );
+
+gui = new GUI({autoPlace: false} );
+animation.gui();
+filtration.gui();
+edges.gui();
+points.gui();
+tube.gui();
+gui.open();
+
+//const axesHelper = new THREE.AxesHelper( 10 );
+//axesHelper.translateX(40);
+//axesHelper.translateY(20);
+//scene.add( axesHelper );
+
+function onWindowResize() {	
+	//const Width = window.innerWidth*0.7;
+	//const Height = window.innerHeight*0.7;
+	//renderer.setSize(Width,Height);
+	//camera.aspect = Width/Height;
+	//const size = aspectSize(Width,Height);
+		
+	const rect = container.getBoundingClientRect();
+	const width = rect.width;
+	const height = rect.width*0.5;
+	const divid = width*0.02;
+	camera.left   = -width/divid;
+	camera.right  =  width/divid;
+	camera.top    =  height/divid;
+	camera.bottom = -height/divid;
+	camera.near = -divid;
+	camera.aspect = width/height;
+	camera.updateProjectionMatrix();
+		
+	renderer.setSize(width,height);
+	renderer.render(scene,camera);
+}
+
+window.addEventListener( 'resize', onWindowResize );
+onWindowResize();
+
+document.getElementById("mincurvature").addEventListener('change',function() { curvatureButtons.insert(); } );
+document.getElementById("maxcurvature").addEventListener('change',function() { curvatureButtons.insert(); } );
+	
+//if (gui) {
+//	document.getElementById('guicontainer').removeChild(gui.domElement);
+//	gui = false;
+//}
+
+// EXPORTED FUNCTIONS
+
+export function setColorButton(element,color) { curvatureButtons.setColor(element,color); }
+export function setAAColorButton(element,aa) { aminoacidButtons.setColor(element,aa); }
+
+export function stopAndClear() { animationFrame = false; }
+
+export function topmolviewer(filename) {
+	function disposeAll() {
+		tube.dispose();
+		edges.dispose();
+		points.dispose();
+		filtration.dispose();
+		particle.dispose();
 			
-		} else {	
-			controls.update();
-	
-			group.rotation.x += animation.speedx;
-			group.rotation.y += animation.speedy;
-			group.rotation.z += animation.speedz;
-	
-			if ((Date.now() - time) > 100 && animation.filtration !== 0.0 ) {
-				filtration.cutoff += animation.filtration;
-				filtration.cutoff = parseFloat(filtration.cutoff.toFixed(2));
-				filtration.cutoff = filtration.cutoff > filtration.maxDistance ? filtration.minDistance : filtration.cutoff;
-				filtration.update();
-				time = Date.now();
-				//console.log('Animate cutoff and time',filtration.cutoff,time);
-			}
-	
-			controls.update();
-			renderer.render( scene, camera );
-		
-			animationFrame = requestAnimationFrame( animate );
-		}
+		group = false;
+		//camera = false;
+		//scene = false;
+		//container = false;
+		//renderer = false;
 	}
-
+	
+	try {
+	
+	disposeAll();
+	
+	group = new THREE.Group();
+	scene.add( group );
+	
 	parsedata(filename).then((r) => {
-		console.log('All files parserd');
+	
+		console.log('All files parsed');
+
 		filtration.init();
 		points.init();
 		edges.init();
 		tube.init();
+		
+		curvatureButtons.insert();
+		aminoacidButtons.insert();
+		
 		filtration.update();
+			
+		let time = Date.now();
+		function animate() {
+			if (animationFrame == false) {
+				console.log('Stopping animation frame!');
+				disposeAll();
+				
+			} else {	
+				controls.update();
+				
+				if (animation.speedx != 0.0 || animation.speedy != 0.0 || animation.speedz != 0) {
+					group.rotation.x += animation.speedx;
+					group.rotation.y += animation.speedy;
+					group.rotation.z += animation.speedz;
+				}
+				
+				if ((Date.now() - time) > 100 && animation.filtration !== 0.0 ) {
+					filtration.cutoff += animation.filtration;
+					filtration.cutoff = filtration.cutoff > filtration.maxDistance ? filtration.minDistance : filtration.cutoff;
+					filtration.update();
+					time = Date.now();
+				}
+		
+				controls.update();
+				renderer.render( scene, camera );
+			
+				animationFrame = requestAnimationFrame( animate );
+			}
+		}
+
 		animationFrame = true;
 		animate();
 	});
+	
 	
 	} catch (e) {
 		document.getElementById("info").innerHTML =  "<p><b>Sorry, an error occurred in init(): <br>" + e + "</b></p>";
