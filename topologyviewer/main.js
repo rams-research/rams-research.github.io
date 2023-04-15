@@ -4,7 +4,7 @@ import { GUI } from './js/lil-gui.module.min.js'
 
 // GLOBAL OBJECTS
 
-let canvas, container, renderer, scene, camera, group, gui, ratio;
+let canvas, container, renderer, scene, camera, group, gui;
 
 function colorFont(color,str) { return `<h8 style="color:${color};"> ${str} </h8>`}
 
@@ -12,62 +12,63 @@ function fFixed(float,n) { return parseFloat(parseFloat(float).toFixed(n)) }
 function distanceFixed(float) { return fFixed(float,1) }
 function curvatureFixed(float) { return fFixed(float,2) }
 
-let particle = {
-	data: {
-		particles: {
-			count: 0,
-			coordinates: [],
-			name: [],
-			resid: []
-		},
-		residues: {
-			count: 0,
-			name: [],
-			sequence: [],
-			curvature: [],
-		}
+let particles = new Proxy({
+	residues: {
+		name: [],
+		sequence: [],
+		curvature: [],
 	},
-	count: function() {return this.data.particles.count; },
-	name: function(i) { return this.data.particles.name[i] },
-	resseq: function(i) { return this.data.residues.sequence[this.data.particles.resid[i]] },
-	resname: function(i) { return this.data.residues.name[this.data.particles.resid[i]] },
+	coordinates: [],
+	name: [],
+	resid: [],
+	resseq: new Proxy({},{
+		get: function (obj,prop) { return particles.residues.sequence[particles.resid[prop]] },
+		set: function (obj,prop,value) { particles.residues.sequence[particles.resid[prop]] = value; return true },
+	}),
+	resname: new Proxy({},{
+		get: function(obj,prop) { return particles.residues.name[particles.resid[prop]] },
+		set: function(obj,prop,value) { particles.residues.name[particles.resid[prop]] = value; return true },
+	}),
 	curvature: function(i,cutoff) {
-		const curvature = this.data.residues.curvature;
-		//if (typeof curvature != 'number') {
-		//console.log('DEBUG point=',i,'cutoff=', cutoff,'curvature=',curvature);
-		//}
-		const resid = this.data.particles.resid[i];
-		const r1 = curvature[resid];
-		const r2 = r1[cutoff];
+		const curvature = particles.residues.curvature;
+		const resid = particles.resid[i];
 		return curvature[resid][cutoff];
 	},
-	charge: function(i) {
-		let m = new Proxy( {
+	charge: new Proxy({
 			'H':1.0,
 			'O':8.0,
 			'N':7.0, 
 			'C':6.0,
 			'S':16.0
-		}, function() { 
-			get: (obj,prop) => { 
-				console.log('Unmapped atom ',obj);
-				return prop in obj ? obj[prop] : 1.0 
-			}}
-		);
-		return m[this.name(i).slice(0,1)]
-	},
+		},{
+			get: function(obj,prop) { const n = particles.name[prop].slice(0,1); return n in obj ? obj[n] : 1.0 }
+		}
+	),
 	dispose: function () {
-		particle.data.particles.count = 0;
-		particle.data.particles.coordinates.length = 0;
-		particle.data.particles.name.length = 0;
-		particle.data.particles.resid.length = 0;
+		particles.coordinates.length = 0;
+		particles.coordinates = [];
 		
-		particle.data.residues.count = 0;
-		particle.data.residues.name.length = 0;
-		particle.data.residues.sequence.length = 0;
-		particle.data.residues.curvature.length = 0;
+		particles.name.length = 0;
+		particles.name = [];
+		
+		particles.resid.length = 0;
+		particles.resid = [];
+		
+		particles.residues.name.length = 0;
+		particles.residues.name = [];
+		
+		particles.residues.sequence.length = 0;
+		particles.residues.sequence = [];
+		
+		particles.residues.curvature.length = 0;	
+		particles.residues.curvature = [];
 	}
-}
+	},{
+	get: function(obj,prop) {
+		if (prop in obj) { return obj[prop] }
+		if (prop == "count") { return particles.name.length }
+	}
+});
 
 const palette = {
 	default: 'bilbao',
@@ -87,13 +88,16 @@ const palette = {
 		'#800080', // purple
 		],
 	pickColor: function (c) {
+		
 		const def = this[this.default];
 		const numColor = this.numColor();
 		
 		const num = numColor - 1;
 		
-		const min = parseFloat(document.getElementById("mincurvature").value);
-		const max = parseFloat(document.getElementById("maxcurvature").value);
+		const min = document.getElementById("mincurvature").value;
+		const max = document.getElementById("maxcurvature").value;
+		
+		console.assert(min && max,`palette.pickColor(${c}) was not able to read mincurvature=${min} and/or maxcuravature=${max}.`);
 		
 		const bin = (max - min)/num;
 		let d = Math.floor((c-min)/bin + 0.5);
@@ -102,7 +106,7 @@ const palette = {
 		d = d > num ? num : d;
 		
 		const str = def[d];
-		if (! str) {console.log('STR PROBLEM AT d=',d,'C=',c,'numColor=',numColor,'max=',max,'min=',min)}
+		if (! str) {console.log('PALETTE STR PROBLEM AT d=',d,'C=',c,'numColor=',numColor,'max=',max,'min=',min)}
 		
 		const r = parseInt(str.slice(1,3),16)/255;
 		const g = parseInt(str.slice(3,5),16)/255;
@@ -114,27 +118,32 @@ const palette = {
 
 async function parsedata(filename) {
 	try {
+		console.log('######################################################################################');
 		let response = await fetch(filename);
 		let text = await response.text();
 		let rescount = 0;
 		let atmcount = 0;
+		let atmrescount = 0;
 		let state = false;
+		
 		const lines = text.split( '\n' );
-		const particles = particle.data.particles;
-		const residue = particle.data.residues;
+		const residue = particles.residues;
 		
 		let minCurvature = false;
 		let maxCurvature = false;
 		let minDistance = false;
 		let maxDistance = false;
 		
+		let resname = '';
+		let resseq = '';
+		
 		for ( let i = 0, l = lines.length; i < l; i ++ ) {
 			let line = lines[i]
-			if      (line == 'ATOMS')    { state = 'ATOMS';  atmcount = 0; }
+			if      (line == 'ATOMS')    { state = 'ATOMS';  atmcount = 0; atmrescount = 0;}
 			else if (line == 'RESIDUES') { state = 'RESIDUES'; rescount = 0;}
 			else if (line == 'EDGES') { state = 'EDGES';}
 			else if (state == 'ATOMS')   {
-				if (line == '') { rescount++; }
+				if (line == '') { atmrescount++; }
 				else {
 					const split = line.split(' ');
 				
@@ -142,30 +151,31 @@ async function parsedata(filename) {
 					const x = parseFloat(split[1]);
 					const y = parseFloat(split[2]);
 					const z = parseFloat(split[3]);
-			
-					particles.count++;
+					
 					particles.coordinates.push(x,y,z);
 					particles.name.push(name);
-					particles.resid.push(rescount);
+					particles.resid.push(atmrescount);
 				}
-			}
-			else if (state == 'EDGES') {
+			} else if (state == 'EDGES') {
 				const split = line.split(' ');
 				if (split.length == 3){
 					const i = parseInt(split[0])-1;
 					const j = parseInt(split[1])-1;
 					const d = parseFloat(split[2]);
-					//console.log('debug',i,j,d);
+					console.assert(i>=0 && i<particles.count,"Wrong particle number in EDGES list with i="+i );
+					console.assert(j>=0 && j<particles.count,"Wrong particle number in EDGES list with j="+j );
+					console.assert(d>0,"Wrong distance in EDGES list with d="+d);
+					
 					filtration.list.push([i,j,d]);
 				}
-			}
-			else if (state == 'RESIDUES') {
+			} else if (state == 'RESIDUES') {
 				if (line == '') { rescount++; }
 				else if (line.substring(0,1) == ' ') { /* data */
 					const split = line.split(' ');
 					
 					const cutoff = parseFloat(split[1]);
 					const curv = parseFloat(split[2]);
+					
 					residue.curvature[rescount][cutoff] = curv;
 					
 					minDistance = Math.min(cutoff,minDistance || cutoff);
@@ -175,12 +185,11 @@ async function parsedata(filename) {
 					minCurvature = Math.min(curv,minCurvature || curv);
 				} else {
 					const split = line.split(' ');
-					const resname = split[0];
-					const resseq = split[1];
-					
-					residue.count += 1;
+					resname = split[0];
+					resseq = parseInt(split[1]);
+
 					residue.name.push(resname);
-					residue.sequence.push(parseInt(resseq));
+					residue.sequence.push(resseq);
 					residue.curvature.push(new Proxy({},{
 						get: function (obj, cutoff) { return obj[distanceFixed(cutoff)] },
 						set: function (obj, cutoff, curvature) { obj[distanceFixed(cutoff)] = curvature; return true }
@@ -189,19 +198,21 @@ async function parsedata(filename) {
 			}
 		}
 		
-		console.log('minCurvature',minDistance, minCurvature);
-		console.log('maxCurvature',maxDistance, maxCurvature);
-		console.log('particles.count',particles.count);
+		console.log('minCurvature',minCurvature);
+		console.log('maxCurvature',maxCurvature);
+		console.log('minDistance',minDistance);
+		console.log('maxDistance',maxDistance);
+		console.log('particles.count',particles.count, '-->', particles.count * 3, 'positions');
+		console.log('filtration.list.length',filtration.list.length);
+		console.assert(particles.count*3 == particles.coordinates.length, 'Wrong length of particles.coordinates');
+		console.assert(atmrescount+1 == rescount,'Wrong number of residues, rescount='+rescount+' atmrescount='+atmrescount);
 		
 		filtration.maxCurvature = maxCurvature;
 		filtration.minCurvature = minCurvature;
 		filtration.minDistance = minDistance;
 		filtration.maxDistance = maxDistance;
-		filtration.cutoff = (maxDistance - minDistance)/2;
 		
-		document.getElementById("mincurvature").value = minCurvature;
-		document.getElementById("maxcurvature").value = maxCurvature;
-		
+		console.log('######################################################################################');
 		return 'ok'
 	} catch (e) {
 		document.getElementById("info").innerHTML =  "<p><b>Sorry, an error occurred reading files :<br>" + e + "</b></p>";
@@ -223,9 +234,48 @@ const curvatureButtons = {
 			this.elements[color] = true;
 			this.elements.count += 1;
 		}
-		filtration.update();
 	},
 	insert: function() {
+		
+		function f(color) {
+			const str = `<button
+					onclick="setColorButton(this,'${color}')"
+					id="buttonColor${color}"
+					class="w3-button w3-small w3-round" 
+					type="button"
+					style="padding: 0px 15px 0px 15px; border: 1px solid ${color}; margin: 0px 2px; background-color: white; font-family: monospace"
+				      >
+				      ...
+				      </button>`;
+			return str
+		}
+		
+		let str = '';
+		let count = 0;
+		const pal = palette[palette.default];
+		for(let k=0;k<pal.length;k++){
+			count += 1;
+			str += f(pal[k]);
+			if (count == 3) {count=0; str+="<br>"}
+		}
+		str += `<button id="ButtonColorUpdataStatistics" class="w3-button w3-border" type="button" style="width:auto;"> Update based on statitistics</button>`
+		
+		document.getElementById("pickcolorbutton").innerHTML = str;
+		
+		document.getElementById("ButtonColorUpdataStatistics").addEventListener('click',
+			function() { 
+				document.getElementById("mincurvature").value = filtration.avgCurv - 2*filtration.stdCurv;
+				document.getElementById("maxcurvature").value = filtration.avgCurv + 2*filtration.stdCurv;
+				filtration.stat(); 
+				curvatureButtons.update(); 
+				filtration.update();
+		});
+		
+		for (const prop in this.elements) { if (prop != 'count') { this.elements[prop] = false; } }
+		this.elements.count = 0;
+	},
+	update: function() {
+		//console.log("DEBUG curvatureButtons.update();")
 		function pad(pad, num, padLeft) {
 			let str = num.toFixed(2);
 			if (num >= 0.0) str = '+'+str;
@@ -233,41 +283,17 @@ const curvatureButtons = {
 			if (padLeft) {return (pad + str).slice(-pad.length);
 			} else {return (str + pad).substring(0, pad.length);}
 		}
-		function f(color,val) {
-			const str = `<button
-					onclick="setColorButton(this,'${color}')"
-					class="w3-button w3-small w3-round" 
-					type="button"
-					style="padding: 0px 15px 0px 15px; border: 1px solid ${color}; margin: 0px 2px; background-color: white; font-family: monospace"
-				      >
-				      <!--font color='${color}'> ${val} </font-->
-				      ${val}
-				      </button>`;
-			return str
-		}
-		let str = '';
-		let count = 0;
 		
 		const min = parseFloat(document.getElementById("mincurvature").value);
 		const max = parseFloat(document.getElementById("maxcurvature").value);
-		//console.log('DEBUG html id',max,min);
+		//console.log("DEBUG",min,max);
 		
-		//const max = filtration.maxCurvature;
-		//const min = filtration.minCurvature;
 		const bin = Math.abs(max-min)/palette.numColor();
 		for (let c = (min+bin/2); c < max; c += bin) {
 			const curv = curvatureFixed(c);
-			count += 1;
 			const rgb = palette.pickColor(curv);
-			str += f(rgb[3], pad('00000',curv));
-			if (count == 4) { str+="<br>"; count = 0}
+			document.getElementById(`buttonColor${rgb[3]}`).innerHTML = pad("00000",curv);
 		}
-		document.getElementById("pickcolorbutton").innerHTML = str;
-		//console.log(str,max,min,bin,palette.numColor());
-		for (const prop in this.elements) { if (prop != 'count') { this.elements[prop] = false; } }
-		this.elements.count = 0;
-		
-		filtration.update();
 	}
 }
 
@@ -283,7 +309,6 @@ const aminoacidButtons = {
 			this.elements[aa] = true;
 			this.elements.count += 1;
 		}
-		filtration.update();
 	},
 	insert: function() {
 		function g(aa) {
@@ -316,76 +341,122 @@ const aminoacidButtons = {
 const filtration = {
 	updateEdgesColors: true,
 	updateTubeColors: true,
-	cutoff: 1.6,
+	cutoff: false,
 	minCurvature: 0.0,
 	maxCurvature:  0.0,
 	minDistance: 0.0,
 	maxDistance: 0.0,
 	list: [],
-	update: function() {
-		points.colors();
+	avgCurv: false,
+	stdCurv: false,
+	avgSelectedCurv: false,
+	stdSelectedCurv: false,
+	residueIsSelected: function(res) {
+		const name = particles.residues.name[res];
+		const curv = particles.residues.curvature[res][filtration.cutoff];
+		//console.log('DEBUG',name,curv);
+		const rgb = palette.pickColor(curv);
+		return !((curvatureButtons.elements.count > 0 && ! curvatureButtons.elements[rgb[3]])
+		     || (aminoacidButtons.elements.count > 0 && ! aminoacidButtons.elements[name])
+		       )
+	},
+	stat: function() {
+		//console.log("filtration.stat()");
+		function stat() {
+			let count = 0;
+			let mean = 0.0;
+			let M2 = 0.0;
+			return function(c) {
+				if (!c) {return count > 0 ? [count,mean,Math.sqrt(M2/count)] : [false,false,false]}
+				count += 1;
+				const delta = c - mean;
+				mean += delta / count;
+				const delta2 = c - mean;
+				M2 += delta * delta2;
+			}
+		}
 		
+		let statAll = stat();
+		let statSelected = stat();
+		
+		let sumAll = 0.0;
+		let sumSelected = 0.0;
+		console.assert(particles.residues.name.length == particles.residues.curvature.length,"WRONG CURVATURES ARRAY LENGTH");
+		
+		const max = document.getElementById("maxcurvature").value;
+		const min = document.getElementById("mincurvature").value;
+		
+		for (let i=0; i<particles.residues.name.length; i++) {
+			let curv = particles.residues.curvature[i][filtration.cutoff];
+			statAll(curv);
+			if (max && min && this.residueIsSelected(i)) { statSelected(curv) }
+		}
+		
+		statAll = statAll();
+		statSelected = statSelected();
+		
+		this.avgCurv = statAll[1];
+		this.stdCurv = statAll[2];
+		this.avgSelectedCurv = statSelected[1] || this.avgCurv;
+		this.stdSelectedCurv = statSelected[2] || this.stdCurv;
+	},
+	update: function() {
+		//console.log("filtration.update();");
+		function boxedStr(color,str) {
+			return `<div class="w3-round" style="padding: 0px 15px 0px 15px; border: 1px solid ${color}; margin: 1px 2px;"> ${str} </div>`
+		}
+		
+		const color1 = palette.pickColor(this.avgCurv)[3];
+		const color2 = palette.pickColor(this.avgSelectedCurv)[3];
+		
+		document.getElementById("infoeuler").innerHTML = ""
+			+ boxedStr(color1,`<b>Curvature per residue</b><br> Mean: ${curvatureFixed(this.avgCurv)}    | StdDev: ${curvatureFixed(this.stdCurv)} <br>`)
+			+ boxedStr(color2,`<b>Curvatures highlighted</b><br>Mean: ${curvatureFixed(this.avgSelectedCurv)}   | StdDev: ${curvatureFixed(this.stdSelectedCurv)} <br>`);
+			
+		points.colors();
 		edges.colors(this.updateEdgesColors);
 		edges.update();
-		
 		tube.colors(this.updateTubeColors);
-		
-		points.updateinfoeuler();
 	},
 	init: function() {
 		console.log('Filtration init...');
 		const list = this.list;
-		/*
-		const coordinates = particle.data.particles.coordinates;
-		
-		for ( let i = 0; i < particle.count(); i ++ ) {
-			let a = new THREE.Vector3(coordinates[ i*3 + 0],coordinates[ i*3 + 1],coordinates[ i*3 + 2 ]);
-			for ( let j = i + 1; j < particle.count(); j ++ ) {
-				let b = new THREE.Vector3(coordinates[ j*3 + 0], coordinates[ j*3 + 1], coordinates[ j*3 + 2]) ;
-				let dist = a.distanceTo(b);		
-				if ( dist < maxDistance ) { 
-					this.list.push([i,j,dist]);
-				}
-			}
-		}
-		*/
 		this.list.sort(function(a,b){ return a[2] > b[2]});
-		//for(let k=0;k<this.list.length;k++){console.log('list',this.list[k])}
 		
-		//this.minDistance = parseFloat(list[0][2].toFixed(2));
-		//this.maxDistance = parseFloat(list[list.length-1][2].toFixed(2));
-		
-		console.log( 'This molecule has a maximum of ' + list.length + ' edges ');
-	},
-	gui: function() {
-		console.log('Filtration GUI...');
-		const folder = gui.addFolder('Filtration');
-		
-		//function onDistanceUpdate() {
-			//console.log(filtration.folderCutoff);
-			//this.max(this.object.maxDistance);
-			//this.min(this.object.minDistance);
-		//}
+		console.log( '\tThis molecule has a maximum of ' + list.length + ' edges ');
 		
 		function onCutoffUpdate() {
-			this.max(filtration.maxDistance);
-			this.min(filtration.minDistance);
+			filtration.cutoff = parseFloat(this.value);
+			document.getElementById("cutoffvalue").value = this.value;
+			document.getElementById("cutoffinput").value = this.value;
+			filtration.stat();
 			filtration.update();
 		}
 		
-		folder.add( filtration, 'minDistance', this.minDistance).listen().disable();
-		folder.add( filtration, 'maxDistance', this.maxDistance).listen().disable();
+		this.cutoff = this.cutoff ? this.cutoff : (this.maxDistance - this.minDistance)/2;
 		
-		folder.add( filtration, 'minCurvature', this.minCurvature).listen().disable();
-		folder.add( filtration, 'maxCurvature', this.maxCurvature).listen().disable();
-		folder.add( filtration, 'cutoff', this.minDistance, this.maxDistance, 0.1 ).listen().onChange( onCutoffUpdate );
-		//console.log(filtration.folderCutoff);
+		document.getElementById("infomincutoff").innerHTML=`minCutoff: ${distanceFixed(this.minDistance)}`
+		document.getElementById("infomaxcutoff").innerHTML=`maxCutoff: ${distanceFixed(this.maxDistance)}`
+		document.getElementById("infomincurvature").innerHTML=`minCurvature: ${curvatureFixed(this.minCurvature)}`
+		document.getElementById("infomaxcurvature").innerHTML=`maxCurvature: ${curvatureFixed(this.maxCurvature)}`
 		
-		//folder.add( filtration, 'updateEdgesColors', true ).onChange( onUpdate );
-		//folder.add( filtration, 'updateTubeColors', true ).onChange( onUpdate );
+		const range = document.getElementById("cutoffvalue");
+		range.max = this.maxDistance;
+		range.min = this.minDistance;
+		range.step = 0.1;
+		range.value = filtration.cutoff;
+		range.addEventListener('input',onCutoffUpdate);
+		
+		const input = document.getElementById("cutoffinput");
+		input.value = filtration.cutoff;
+		input.addEventListener('change',onCutoffUpdate);
+		
+		document.getElementById("mincurvature").value = this.minCurvature; 
+		document.getElementById("maxcurvature").value = this.maxCurvature;
 	},
 	dispose: function() {
 		filtration.list.length = 0;
+		filtration.list = [];
 	}
 }
 
@@ -410,7 +481,7 @@ const tube = {
 		const coords = [];
 		const translate = points.geometry.getAttribute('translate');
 		for(let k=0; k<translate.count; k++) {
-			const name = particle.name(k);
+			const name = particles.name[k];
 			if (name == 'CA' || name == 'C' || name == 'N') {
 			//if (name == 'N') {
 				const x = translate.array[3*k + 0];
@@ -600,11 +671,11 @@ const tube = {
 				//console.log(p);
 				//console.log(ray.intersections[0]);
 				const b = tube.findAtPath(p);
-				const resseq = particle.resseq(b);
+				const resseq = particles.resseq[b];
 				const cutoff = filtration.cutoff;
-				const curv = particle.curvature(b,cutoff);
-				const resname = particle.resname(b);
-				const name = particle.name(b);
+				const curv = particles.curvature(b,cutoff);
+				const resname = particles.resname[b];
+				const name = particles.name[b];
 				const rgbstr = palette.pickColor(curv);
 				
 				str += `| Filtration cutoff: ${distanceFixed(filtration.cutoff)}
@@ -614,30 +685,6 @@ const tube = {
 			}
 			document.getElementById("infomouse").innerHTML = str;
 		});
-		/*
-		renderer.domElement.addEventListener('click', function (event) {
-			event.preventDefault();
-			//camera.updateMatrixWorld();
-			if (ray.intersections.length > 0) {
-				const p = ray.intersections[0].point;
-				const b = tube.findAtPath(p);
-					
-				const resseq = particle.resseq(b);
-				const cutoff = filtration.cutoff;
-				
-				const curv = particle.curvature(b,cutoff);
-				const resname = particle.resname(b);
-				const name = particle.name(b);
-				const rgbstr = pickColor(curv);
-				
-				document.getElementById("inforesidue").innerHTML = `
-					Filtration cutoff: ${filtration.cutoff.toFixed(2)}
-					Id: ${resname} ${resseq} ${name}
-					Curvature: ${curv.toFixed(2)}`;
-				}
-			}
-		);
-		*/
 	},
 	dispose: function() {
 		if(!tube.mesh) {return}
@@ -868,8 +915,7 @@ const points = {
 	init: function() {
 		console.log('Points init...');
 		if (this.geometry !== false) { return }
-		
-		const particles = particle.data.particles;		
+			
 		const position = Float32Array.from(particles.coordinates);
 
 		function center() {
@@ -899,7 +945,7 @@ const points = {
 		//console.log(geometry.attributes);
 		
 		const number = new Float32Array(particles.count);
-		for (let k=0; k<particles.count; k++) { number[k] = particle.charge(k);}
+		for (let k=0; k<particles.count; k++) { number[k] = particles.charge[k];}
 		geometry.setAttribute( 'particlesNumber', new THREE.InstancedBufferAttribute( number, 1 ) );
 		
 		const colors = new Float32Array(particles.count*3);
@@ -924,7 +970,6 @@ const points = {
 		
 		this.update();
 	},
-	avgColorsCurv: false,
 	colors: function() {
 		console.log('Points colors...');
 		
@@ -935,74 +980,21 @@ const points = {
 		
 		const white = new THREE.Color(0xFFFFFF);
 		
-		let oldResseq = false;
-		let countResseq = 0;
-		let sumResseq = 0.0;
-		
-		for (let i=0; i<count; i++){
-			const curv = particle.curvature(i,filtration.cutoff);
+		for (let i=0; i<count; i++) {
+			const curv = particles.curvature(i,filtration.cutoff);
 			let rgb = palette.pickColor(curv);
-			const resseq = particle.resseq(i);
-			//console.log(i,count,resseq,rgb,curv);
-			if (
-			     (curvatureButtons.elements.count > 0 && !curvatureButtons.elements[rgb[3]]) 
-			     ||
-			     (aminoacidButtons.elements.count > 0 && !aminoacidButtons.elements[particle.resname(i)])
-			   ) {
+			if ((curvatureButtons.elements.count > 0 && !curvatureButtons.elements[rgb[3]]) 
+			 || (aminoacidButtons.elements.count > 0 && !aminoacidButtons.elements[particles.resname[i]])) {
 				const rgb1 = new THREE.Color(rgb[0],rgb[1],rgb[2]);
 				const rgb2 = rgb1.lerp(white,0.95);
 				rgb = [rgb2.r,rgb2.g,rgb2.b,rgb[3]];
-			} else {
-				if (resseq != oldResseq) {
-					oldResseq = resseq;
-					countResseq += 1;
-					sumResseq += curv;
-				}
 			}
 			array[i*size+0] = rgb[0];
 			array[i*size+1] = rgb[1];
 			array[i*size+2] = rgb[2];
 		}
-		this.avgColorsCurv = countResseq > 0 ? sumResseq/countResseq : false;
+		
 		this.geometry.attributes.particlesColors.needsUpdate = true;
-	},
-	updateinfoeuler: function() {
-		const count = particle.count();
-		const cutoff = filtration.cutoff;
-		let sum = 0.0;
-		let sumResseq = 0.0;
-		let countResseq = 0;
-		let oldResseq = false;
-		for (let i=0; i<count; i++) {
-			const resseq = particle.resseq(i);
-			const curv = particle.curvature(i,cutoff);
-			//console.log('curv',i, curv, sum);
-			sum += curv;
-			if (resseq != oldResseq) {
-				oldResseq = resseq;
-				countResseq += 1;
-				sumResseq += curv;
-			}
-		}
-		function boxedStr(color,str) {
-			return `<div class="w3-round" style="padding: 0px 15px 0px 15px; border: 1px solid ${color}; margin: 1px 2px;"> ${str} </div>`
-		}
-		function getColorCurv() {
-			const curv = points.avgColorsCurv;
-			const color = palette.pickColor(curv)[3];
-			if (curv != false) {
-				return boxedStr(color,`Average selected: ${curvatureFixed(curv)}`);
-			 }
-			 return ''
-		}
-		const avg = sumResseq/countResseq;
-		const rgbstr = palette.pickColor(avg);
-		const color = rgbstr[3];
-		document.getElementById("infoeuler").innerHTML = `
-			Filtration cutoff: ${distanceFixed(cutoff)} <br>
-			Euler Characteristics: ${curvatureFixed(sum)} <br>` 
-			+ boxedStr(color,`Average curvature per residue: ${curvatureFixed(avg)} <br>`)
-			+ getColorCurv()
 	},
 	gui: function() {
 		console.log('Points GUI...');
@@ -1039,7 +1031,6 @@ const animation = {
 		folder.add( animation, 'speedy', 0.0, 0.01, 0.001);
 		folder.add( animation, 'speedz', 0.0, 0.01, 0.001);
 		folder.add( animation, 'filtration', 0.0, 0.1, 0.01);
-		document.getElementById('guicontainer').appendChild(gui.domElement);
 	}
 }
 
@@ -1082,8 +1073,10 @@ const light = new THREE.AmbientLight( 0xFFFFFF ); // 0x404040 soft white light
 scene.add( light );
 
 gui = new GUI({autoPlace: false} );
+
+document.getElementById('guicontainer').appendChild(gui.domElement);
+
 animation.gui();
-filtration.gui();
 edges.gui();
 points.gui();
 tube.gui();
@@ -1120,9 +1113,9 @@ function onWindowResize() {
 window.addEventListener( 'resize', onWindowResize );
 onWindowResize();
 
-document.getElementById("mincurvature").addEventListener('change',function() { curvatureButtons.insert(); } );
-document.getElementById("maxcurvature").addEventListener('change',function() { curvatureButtons.insert(); } );
-	
+document.getElementById("mincurvature").addEventListener('change',function() { curvatureButtons.update(); filtration.update();} );
+document.getElementById("maxcurvature").addEventListener('change',function() { curvatureButtons.update(); filtration.update();} );
+
 //if (gui) {
 //	document.getElementById('guicontainer').removeChild(gui.domElement);
 //	gui = false;
@@ -1130,8 +1123,8 @@ document.getElementById("maxcurvature").addEventListener('change',function() { c
 
 // EXPORTED FUNCTIONS
 
-export function setColorButton(element,color) { curvatureButtons.setColor(element,color); }
-export function setAAColorButton(element,aa) { aminoacidButtons.setColor(element,aa); }
+export function setColorButton(element,color) { curvatureButtons.setColor(element,color); filtration.stat(); filtration.update();}
+export function setAAColorButton(element,aa) { aminoacidButtons.setColor(element,aa); filtration.stat(); filtration.update(); }
 
 export function stopAndClear() { animationFrame = false; }
 
@@ -1141,7 +1134,7 @@ export function topmolviewer(filename) {
 		edges.dispose();
 		points.dispose();
 		filtration.dispose();
-		particle.dispose();
+		particles.dispose();
 			
 		group = false;
 		//camera = false;
@@ -1160,17 +1153,21 @@ export function topmolviewer(filename) {
 	parsedata(filename).then((r) => {
 	
 		console.log('All files parsed');
-
-		filtration.init();
-		points.init();
-		edges.init();
-		tube.init();
 		
 		curvatureButtons.insert();
 		aminoacidButtons.insert();
 		
+		filtration.init();
+		filtration.stat();
+
+		curvatureButtons.update();
+
+		points.init();
+		edges.init();
+		tube.init();
+		
 		filtration.update();
-			
+		
 		let time = Date.now();
 		function animate() {
 			if (animationFrame == false) {
@@ -1189,6 +1186,9 @@ export function topmolviewer(filename) {
 				if ((Date.now() - time) > 100 && animation.filtration !== 0.0 ) {
 					filtration.cutoff += animation.filtration;
 					filtration.cutoff = filtration.cutoff > filtration.maxDistance ? filtration.minDistance : filtration.cutoff;
+					document.getElementById("cutoffvalue").value = filtration.cutoff;
+					document.getElementById("cutoffinput").value = filtration.cutoff;
+					filtration.stat();
 					filtration.update();
 					time = Date.now();
 				}
